@@ -28,9 +28,9 @@ export default function Countdown() {
   }
 
   return (
-    <Page background={eventInfo.backgroundImageUrl}>
+    <Page background={eventInfo?.backgroundImageUrl}>
       <div>Faltam</div>
-      <Timer time={eventInfo.startsAt} onZero={onZero} />
+      <Timer time={eventInfo?.startsAt} onZero={onZero} />
       <div>Para as inscrições</div>
     </Page>
   );
