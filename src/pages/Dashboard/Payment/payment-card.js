@@ -1,12 +1,12 @@
+import { useContext } from 'react';
 import styled from 'styled-components';
+import UserContext from '../../../contexts/UserContext';
+import useTicket from '../../../hooks/api/useTicket';
 
 export default function PaymentCard() {
-  const ticket = {
-    id: 1,
-    ticketTypeId: 1,
-    enrollmentId: 1,
-    status: 'Reserved'
-  };
+  const { userData: data } = useContext(UserContext);
+  
+  const { ticket } =  useTicket(data.user.id);
 
   return (
     <>
@@ -19,19 +19,19 @@ export default function PaymentCard() {
       </Status>
 
       <Box>
-        {ticket.ticketTypeId === 1 ?
+        {ticket?.ticketTypeId === 2 ?
           <Description>
             <p>Online</p>
             <p>R$250</p>
           </Description>
           : 
-          ticket.ticketTypeId === 2 ?
+          ticket?.ticketTypeId === 3 ?
             <Description>
               <p>Presencial + Com Hotel </p>
               <p>R$600</p>
             </Description>
             : 
-            ticket.ticketTypeId === 3 ?
+            ticket?.ticketTypeId === 4 ?
               <Description>
                 <p>Presencial + Sem Hotel </p>
                 <p>R$100</p>
