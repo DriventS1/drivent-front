@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import UserContext from '../../../contexts/UserContext';
 import useTicketType from '../../../hooks/api/useTicketType';
@@ -7,10 +7,16 @@ import { Radio } from 'antd';
 export default function TicketType() {
   const { userData: data } = useContext(UserContext);  
   const { ticketType } =  useTicketType(data.user.id);
+  const test = useTicketType();
 
   const [valueId, setValueId] = useState('');
   const [valueHotel, setValueHotel] = useState('');
   const [showOptions, setShowOptions] = useState(false);
+  const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(true);
+
+  useEffect(() => {
+    console.log(test.ticketType);
+  }, []);
 
   return (
     <>
@@ -28,7 +34,7 @@ export default function TicketType() {
           {ticketType?.map(type => {
             return(
               !type.includesHotel? 
-                type.isRemote ? 
+                type.isRemote ?
                   <EachButton>
 
                     <Radio value={type.id} onChange={e => setShowOptions(false)}>
@@ -54,7 +60,17 @@ export default function TicketType() {
                 ('')
             );
           })}
+
+          {ticketTypeIsRemote? 
+            <div>
+              <Subtitle> Fechado! O total ficou em <strong> R$ 100 </strong>. Agora é só confirmar </Subtitle>
+              <BookingButton> <div className='button-text'> RESERVAR INGRESSO </div> </BookingButton>
+            </div>
+            : <> OK </>
+          }
+
         </Buttons>
+
       </Radio.Group>
 
       {showOptions ? (<> 
@@ -130,5 +146,33 @@ const EachButton = styled.div`
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   border-radius: 20px;
   margin:  10px 20px 10px 0;
+`;
+
+const BookingButton = styled.div`
+  width: 162px;
+  height: 37px;
+  border-radius: 4px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
+  border: 1px solid #CECECE;
+  background-color: #E0E0E0;
+  margin: 10px 0 10px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  scale: 0.95;
+  cursor: pointer;
+
+  &:hover {
+    scale: 1;
+  }
+
+  &:active {
+    transform: translateY(2px);
+  }
+
+  .button-text {
+    font-size: 14px;
+    color: #000000; 
+  }
 `;
 
