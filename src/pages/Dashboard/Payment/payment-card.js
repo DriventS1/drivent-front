@@ -1,65 +1,58 @@
 import { useContext } from 'react';
 import styled from 'styled-components';
 import UserContext from '../../../contexts/UserContext';
-import useTicket from '../../../hooks/api/useTicket';
+import useEnrollment from '../../../hooks/api/useEnrollment';
+import useTicketType from '../../../hooks/api/useTicketType';
 
 export default function PaymentCard() {
   const { userData: data } = useContext(UserContext);
-  
-  const { ticket } =  useTicket(data.user.id);
+
+  const { enrollment } = useEnrollment();
+  const { ticketType } = useTicketType();
 
   return (
     <>
-      <Title>
-        Ingresso e pagamento
-      </Title>
+      <Title>Ingresso e pagamento</Title>
 
-      <Status>
-        Ingresso escolhido
-      </Status>
-
-      <Box>
-        {ticket?.ticketTypeId === 2 ?
-          <Description>
-            <p>Online</p>
-            <p>R$250</p>
-          </Description>
-          : 
-          ticket?.ticketTypeId === 3 ?
-            <Description>
-              <p>Presencial + Com Hotel </p>
-              <p>R$600</p>
-            </Description>
-            : 
-            ticket?.ticketTypeId === 4 ?
-              <Description>
-                <p>Presencial + Sem Hotel </p>
-                <p>R$100</p>
-              </Description>
-              : 
-              ''
-        }
-      </Box>
+      {enrollment ? (
+        <>
+          <Status>Ingresso escolhido</Status>
+          {ticketType
+            ? ticketType.map((ticket, key) => (
+              <Box key={key}>
+                <Description>
+                  <p>{ticket.name}</p>
+                  <p>R${ticket.price}</p>
+                </Description>
+              </Box>
+            ))
+            : ''}
+        </>
+      ) : (
+        <PageError>
+          <div>Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso</div>
+        </PageError>
+      )}
     </>
   );
 }
 
 const Title = styled.div`
-    font-weight: 400;
-    font-size: 34px;
-    line-height: 40px;
+  font-weight: 400;
+  font-size: 34px;
+  line-height: 40px;
 
-    margin-bottom: 37px;
+  margin-bottom: 37px;
 `;
 
 const Status = styled.span`
-    font-weight: 400;
-    font-size: 20px;
-    line-height: 24px;
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
 
-    color: #8E8E8E;
+  color: #8e8e8e;
 
-    font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto', sans-serif;
 `;
 
 const Box = styled.div`
@@ -67,35 +60,53 @@ const Box = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  
+
   width: 290px;
   height: 145px;
-  border: 1px solid #CECECE;
+  border: 1px solid #cecece;
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   border-radius: 20px;
-  margin:  25px 20px 10px 0;
-  background-color: #FFEED2;
+  margin: 25px 20px 10px 0;
+  background-color: #ffeed2;
+`;
+
+const PageError = styled.div`
+  width: 100%;
+  height: 80%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  div {
+    width: 50%;
+  }
+
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  color: #8e8e8e;
 `;
 
 const Description = styled.div`
-    width: 167px;
-    height: 20px;
+  width: 167px;
+  height: 20px;
 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-    font-family: 'Roboto', sans-serif;
-    font-weight: 400;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19px;
+
+  p:nth-child(2) {
     font-size: 16px;
-    line-height: 19px;
-    
-    p:nth-child(2){
-        font-size: 16px;
-        line-height: 16px;
-        
-        margin-top: 12px;
-        
-        color: #898989;
-    }
+    line-height: 16px;
+
+    margin-top: 12px;
+
+    color: #898989;
+  }
 `;
