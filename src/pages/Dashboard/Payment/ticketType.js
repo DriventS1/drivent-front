@@ -7,16 +7,25 @@ import { Radio } from 'antd';
 export default function TicketType() {
   const { userData: data } = useContext(UserContext);  
   const { ticketType } =  useTicketType(data.user.id);
-  const test = useTicketType();
+  const listOfTicketType = useTicketType();
 
   const [valueId, setValueId] = useState('');
   const [valueHotel, setValueHotel] = useState('');
   const [showOptions, setShowOptions] = useState(false);
-  const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(true);
+  const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(false);
+  const [price, setPrice] = useState('');
+  const [showCardData, setShowCardData] = useState(false);
 
   useEffect(() => {
-    console.log(test.ticketType);
+    console.log(listOfTicketType.ticketType);
   }, []);
+
+  function selectTicketRemote(type) {
+    setShowOptions(false);
+    setPrice(type.price);
+    setTicketTypeIsRemote(true);
+    setShowCardData(true); //Logica para finalizar o pedido
+  }
 
   return (
     <>
@@ -37,7 +46,7 @@ export default function TicketType() {
                 type.isRemote ?
                   <EachButton>
 
-                    <Radio value={type.id} onChange={e => setShowOptions(false)}>
+                    <Radio value={type.id} onChange={(e, type) => selectTicketRemote(type)}>
                       <div className='type'>
                         {type.name}
                       </div>
@@ -63,10 +72,10 @@ export default function TicketType() {
 
           {ticketTypeIsRemote? 
             <div>
-              <Subtitle> Fechado! O total ficou em <strong> R$ 100 </strong>. Agora é só confirmar </Subtitle>
+              <Subtitle> Fechado! O total ficou em <strong> R$ {price} </strong>. Agora é só confirmar </Subtitle>
               <BookingButton> <div className='button-text'> RESERVAR INGRESSO </div> </BookingButton>
             </div>
-            : <> OK </>
+            : ('')
           }
 
         </Buttons>
