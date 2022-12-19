@@ -1,8 +1,17 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import UserContext from '../../../contexts/UserContext';
 import useTicketType from '../../../hooks/api/useTicketType';
 import { Radio } from 'antd';
+
+function ReviewTicketType({ price }) {
+  return (
+    <div>
+      <Subtitle> Fechado! O total ficou em <strong> R$ {price} </strong>. Agora é só confirmar </Subtitle>
+      <BookingButton> <div className='button-text'> RESERVAR INGRESSO </div> </BookingButton>
+    </div>
+  );
+}
 
 export default function TicketType() {
   const { userData: data } = useContext(UserContext);  
@@ -10,6 +19,22 @@ export default function TicketType() {
   const [valueId, setValueId] = useState('');
   const [valueHotel, setValueHotel] = useState('');
   const [showOptions, setShowOptions] = useState(false);
+  const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(false);
+  const [price, setPrice] = useState('');
+  const [reviewTicketType, setReviewTicketType] = useState(false);
+
+  useEffect(() => {
+    console.log(ticketType);
+  }, []);
+
+  function selectTicketRemote(type) {
+    if (type.isRemote) {
+      setShowOptions(false);
+      setPrice(type.price);
+      setTicketTypeIsRemote(true);
+      setReviewTicketType(true); //Logica para finalizar o pedido
+    };
+  }
 
   return (
     <>
@@ -25,10 +50,10 @@ export default function TicketType() {
           {ticketType?.map(type => {
             return(
               !type.includesHotel? 
-                type.isRemote ? 
+                type.isRemote ?
                   <EachButton>
 
-                    <Radio value={type.id} onChange={e => setShowOptions(false)}>
+                    <Radio value={type.id} onChange={(e, type) => selectTicketRemote(type)}>
                       <div className='type'>
                         {type.name}
                       </div>
@@ -51,7 +76,14 @@ export default function TicketType() {
                 ('')
             );
           })}
+
+          {ticketTypeIsRemote ? 
+            <ReviewTicketType price={price}/>
+            : ('')
+          }
+
         </Buttons>
+
       </Radio.Group>
 
       {showOptions ? (<> 
@@ -67,11 +99,11 @@ export default function TicketType() {
                 !type.isRemote?
                   <EachButton>
 
-                    <Radio value={type.id}>
+                    <Radio value={type.id} onClick={(e) => setReviewTicketType(true)}>
                       <div className='type'>
                         { !type.isRemote && type.includesHotel? 'Com Hotel' : 'Sem Hotel'}
                       </div>
-                      <div className='price'>+ R${type.price - 250}</div>
+                      <div className='price'>+ R${Number(type.price) - 250}</div>
                     </Radio>
 
                   </EachButton>
@@ -79,6 +111,12 @@ export default function TicketType() {
                   ('')
               );
             })}
+
+            {reviewTicketType ? 
+              <ReviewTicketType price={price} />
+              : ('')
+            }
+        
           </Buttons>
 
         </Radio.Group>
@@ -127,5 +165,33 @@ const EachButton = styled.div`
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   border-radius: 20px;
   margin:  10px 20px 10px 0;
+`;
+
+const BookingButton = styled.div`
+  width: 162px;
+  height: 37px;
+  border-radius: 4px;
+  box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
+  border: 1px solid #CECECE;
+  background-color: #E0E0E0;
+  margin: 10px 0 10px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  scale: 0.95;
+  cursor: pointer;
+
+  &:hover {
+    scale: 1;
+  }
+
+  &:active {
+    transform: translateY(2px);
+  }
+
+  .button-text {
+    font-size: 14px;
+    color: #000000; 
+  }
 `;
 
