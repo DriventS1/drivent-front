@@ -16,13 +16,16 @@ function ReviewTicketType({ price }) {
 export default function TicketType() {
   const { userData: data } = useContext(UserContext);  
   const { ticketType } =  useTicketType(data.user.id);
-
   const [valueId, setValueId] = useState('');
   const [valueHotel, setValueHotel] = useState('');
   const [showOptions, setShowOptions] = useState(false);
   const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(false);
   const [price, setPrice] = useState('');
   const [reviewTicketType, setReviewTicketType] = useState(false);
+
+  useEffect(() => {
+    console.log(ticketType);
+  }, []);
 
   function selectTicketRemote(type) {
     if (type.isRemote) {
