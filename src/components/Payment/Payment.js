@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import Cards from 'react-credit-cards';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { BsFillCheckCircleFill } from 'react-icons/bs';
 import Button from '../Form/Button';
@@ -34,6 +33,7 @@ export default function PaymentForm() {
       toast('Não foi possível realizar o pagamento!');
     }
   }
+  
   return (
     <PaymentSession>
       {

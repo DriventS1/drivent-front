@@ -6,6 +6,5 @@ export async function savePayment(body, token) {
       Authorization: `Bearer ${token}`,
     },
   });
-  console.log(response);
   return  response;
 }

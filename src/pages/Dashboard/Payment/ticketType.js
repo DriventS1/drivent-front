@@ -7,6 +7,7 @@ import { Radio } from 'antd';
 export default function TicketType() {
   const { userData: data } = useContext(UserContext);  
   const { ticketType } =  useTicketType(data.user.id);
+  console.log(ticketType);
 
   const [valueId, setValueId] = useState('');
   const [valueHotel, setValueHotel] = useState('');
@@ -21,10 +22,8 @@ export default function TicketType() {
       <Subtitle>
         Primeiro, escolha sua modalidade de ingresso
       </Subtitle>
-
       <Radio.Group onChange={e => setValueId(e.target.value)} value={valueId}>
         <Buttons>
-
           {ticketType?.map(type => {
             return(
               !type.includesHotel? 
