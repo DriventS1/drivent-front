@@ -30,11 +30,11 @@ export default function TicketType() {
 
   function selectTicketRemote(type) {
     if (type.isRemote) {
-      setShowOptions(false);
-      setPrice(type.price);
       setTicketTypeIsRemote(true);
+    } else {
       setReviewTicketType(true); //Logica para finalizar o pedido
-    };
+    }
+    setPrice(type.price);
   }
 
   return (
@@ -56,7 +56,7 @@ export default function TicketType() {
                 type.isRemote ?
                   <EachButton>
 
-                    <Radio value={type.id} onChange={(e, type) => selectTicketRemote(type)}>
+                    <Radio value={type.id} onClick={() => selectTicketRemote(type)}>
                       <div className='type'>
                         {type.name}
                       </div>
@@ -102,7 +102,7 @@ export default function TicketType() {
                 !type.isRemote?
                   <EachButton>
 
-                    <Radio value={type.id} onClick={(e) => setReviewTicketType(true)}>
+                    <Radio value={type.id} onClick={() => selectTicketRemote(type)}>
                       <div className='type'>
                         { !type.isRemote && type.includesHotel? 'Com Hotel' : 'Sem Hotel'}
                       </div>
