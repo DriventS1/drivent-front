@@ -37,7 +37,7 @@ export default function PaymentCard() {
   );
 }
 
-const Title = styled.div`
+export const Title = styled.div`
   font-weight: 400;
   font-size: 34px;
   line-height: 40px;
@@ -45,7 +45,7 @@ const Title = styled.div`
   margin-bottom: 37px;
 `;
 
-const Status = styled.span`
+export const Status = styled.span`
   font-weight: 400;
   font-size: 20px;
   line-height: 24px;
