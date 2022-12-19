@@ -56,7 +56,7 @@ export default function TicketType() {
                 type.isRemote ?
                   <EachButton>
 
-                    <Radio value={type.id} onChange={() => selectTicketRemote(type)}>
+                    <Radio value={type.id} onClick={() => selectTicketRemote(type)}>
                       <div className='type'>
                         {type.name}
                       </div>
