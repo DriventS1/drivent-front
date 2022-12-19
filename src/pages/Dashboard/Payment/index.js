@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 import { Radio } from 'antd';
+import PaymentForm from '../../../components/Payment/Payment';
 
 export default function Payment() {
 // A tabela ticketTypes precisa ser povoada pelas infos abaixo
@@ -41,38 +42,7 @@ export default function Payment() {
   return (
     <Container>
       <div className='title'>Ingresso e pagamento</div>
-      <div className='subtitle'>Primeiro, escolha sua modalidade de ingresso</div>
-      {/* A ideia da radio box aqui é salvar o id do ticketTypes (1, 2 ou 3) para a criação do ticket do usuário */}
-      <div className='buttons'>
-
-        {/* Na primeira parte ele poderá escolher entre o id 1 (presencial sem hotel) ou 3 (online com hotel)*/}
-        <Radio.Group className='buttons' onChange={e => setValueId(e.target.value)} value={valueId}>
-          <Radio className='each-button' value={3} onChange={e => setShowOptions(false)}>
-            <div>Online</div>
-            <div>R$100</div>
-          </Radio>
-          <Radio className='each-button' value={1} onChange={e => setShowOptions(true)}>
-            <div>Presencial</div>
-            <div>R$250</div>
-          </Radio>
-        </Radio.Group>
-
-      </div>
-      {/* Apenas se o usuário escolher o id 1 (presencial sem hotel) a opção seguinte irá aparecer, e só então ele poderá trocar para o id 2 (presencial com hotel) caso desejar */}
-      <div>{showOptions ? 
-        (<>
-          <div className='subtitle'>Ótimo! Agora escolha sua modalidade de hospedagem</div>
-          <Radio.Group className='buttons' onChange={e => setValueHotel(e.target.value)} valueHotel={valueId}>
-            <Radio className='each-button' value={3} >
-              <div>Sem hotel</div>
-              <div>+ R$0</div>
-            </Radio>
-            <Radio className='each-button' value={2} >
-              <div>Com hotel</div>
-              <div>+ R$350</div>
-            </Radio>
-          </Radio.Group></>) : 
-        ('')}</div>
+      <PaymentForm/>
     </Container>
   );
 }
