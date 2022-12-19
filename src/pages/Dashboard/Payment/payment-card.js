@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import UserContext from '../../../contexts/UserContext';
 import useEnrollment from '../../../hooks/api/useEnrollment';
 import useTicketType from '../../../hooks/api/useTicketType';
+import PaymentMethod from './PaymentMethod';
 
 export default function PaymentCard() {
   const { userData: data } = useContext(UserContext);
@@ -27,6 +28,7 @@ export default function PaymentCard() {
               </Box>
             ))
             : ''}
+          <PaymentMethod/>
         </>
       ) : (
         <PageError>

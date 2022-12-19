@@ -3,9 +3,9 @@ import Cards from 'react-credit-cards';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { BsFillCheckCircleFill } from 'react-icons/bs';
-import Button from '../Form/Button';
-import { savePayment } from '../../services/paymentApi';
-import useToken from '../../hooks/useToken';
+import Button from '../../../components/Form/Button';
+import { savePayment } from '../../../services/paymentApi';
+import useToken from '../../../hooks/useToken';
 import 'react-credit-cards/es/styles-compiled.css';
 
 export default function PaymentForm() {
