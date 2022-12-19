@@ -33,7 +33,7 @@ export default function PaymentForm() {
       toast('Não foi possível realizar o pagamento!');
     }
   }
-  
+
   return (
     <PaymentSession>
       {
