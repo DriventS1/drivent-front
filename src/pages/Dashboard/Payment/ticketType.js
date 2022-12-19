@@ -4,27 +4,37 @@ import UserContext from '../../../contexts/UserContext';
 import useTicketType from '../../../hooks/api/useTicketType';
 import { Radio } from 'antd';
 
+function ReviewTicketType({ price }) {
+  return (
+    <div>
+      <Subtitle> Fechado! O total ficou em <strong> R$ {price} </strong>. Agora é só confirmar </Subtitle>
+      <BookingButton> <div className='button-text'> RESERVAR INGRESSO </div> </BookingButton>
+    </div>
+  );
+}
+
 export default function TicketType() {
   const { userData: data } = useContext(UserContext);  
   const { ticketType } =  useTicketType(data.user.id);
-  const listOfTicketType = useTicketType();
 
   const [valueId, setValueId] = useState('');
   const [valueHotel, setValueHotel] = useState('');
   const [showOptions, setShowOptions] = useState(false);
   const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(false);
   const [price, setPrice] = useState('');
-  const [showCardData, setShowCardData] = useState(false);
+  const [reviewTicketType, setReviewTicketType] = useState(false);
 
   useEffect(() => {
-    console.log(listOfTicketType.ticketType);
+    console.log(ticketType);
   }, []);
 
   function selectTicketRemote(type) {
-    setShowOptions(false);
-    setPrice(type.price);
-    setTicketTypeIsRemote(true);
-    setShowCardData(true); //Logica para finalizar o pedido
+    if (type.isRemote) {
+      setShowOptions(false);
+      setPrice(type.price);
+      setTicketTypeIsRemote(true);
+      setReviewTicketType(true); //Logica para finalizar o pedido
+    };
   }
 
   return (
@@ -70,11 +80,8 @@ export default function TicketType() {
             );
           })}
 
-          {ticketTypeIsRemote? 
-            <div>
-              <Subtitle> Fechado! O total ficou em <strong> R$ {price} </strong>. Agora é só confirmar </Subtitle>
-              <BookingButton> <div className='button-text'> RESERVAR INGRESSO </div> </BookingButton>
-            </div>
+          {ticketTypeIsRemote ? 
+            <ReviewTicketType price={price}/>
             : ('')
           }
 
@@ -95,11 +102,11 @@ export default function TicketType() {
                 !type.isRemote?
                   <EachButton>
 
-                    <Radio value={type.id}>
+                    <Radio value={type.id} onClick={(e) => setReviewTicketType(true)}>
                       <div className='type'>
                         { !type.isRemote && type.includesHotel? 'Com Hotel' : 'Sem Hotel'}
                       </div>
-                      <div className='price'>+ R${type.price - 250}</div>
+                      <div className='price'>+ R${Number(type.price) - 250}</div>
                     </Radio>
 
                   </EachButton>
@@ -107,6 +114,12 @@ export default function TicketType() {
                   ('')
               );
             })}
+
+            {reviewTicketType ? 
+              <ReviewTicketType price={price} />
+              : ('')
+            }
+        
           </Buttons>
 
         </Radio.Group>
