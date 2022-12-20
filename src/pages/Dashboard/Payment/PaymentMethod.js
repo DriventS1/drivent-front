@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import Cards from 'react-credit-cards';
+import * as Payment from 'payment';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { BsFillCheckCircleFill } from 'react-icons/bs';
 import Button from '../../../components/Form/Button';
 import { savePayment } from '../../../services/paymentApi';
 import useToken from '../../../hooks/useToken';
+import useTicket from '../../../hooks/api/useTicket';
 import 'react-credit-cards/es/styles-compiled.css';
 
 export default function PaymentForm() {
@@ -19,14 +21,22 @@ export default function PaymentForm() {
     number: '',
     focus: ''
   });
-
+  const { ticket } = useTicket();
+  
   async function sendPaymentData(event) {
     event.preventDefault();
-
-    const { focus, ...resultPaymentData } = paymentData;
+    
+    const body = { 
+      focus, 
+      ticketId: ticket.id,
+      cardData: {
+        ...paymentData, 
+        issuer: Payment.fns.cardType(paymentData.number) 
+      }
+    };
 
     try {
-      await savePayment( resultPaymentData, token );
+      await savePayment( body, token );
       toast('Pagamento realizado com sucesso!');
       setPaymentWasMade(true);
     } catch (err) {
@@ -157,6 +167,8 @@ const Form = styled.form`
   flex-direction: row;
   justify-content: space-between;
   font-size: 20px;
+  padding-bottom: 80px;
+  position: relative;
 
   span {
     height: 20px;
