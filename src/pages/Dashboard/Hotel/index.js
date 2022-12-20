@@ -7,7 +7,7 @@ import { Status, Title } from '../Payment/payment-card';
 export default function Hotel() {
   const { hotels } = useHotel();
 
-  //console.log(hotels);
+  //console.log(hotels[0].Rooms);
 
   const [data, setData] = useState({
     hotelId: null,
@@ -29,10 +29,18 @@ export default function Hotel() {
       {hotels ? (
         <Container>
           {hotels.map((hotel, key) => {
+            let single, double, triple = '';
+            hotel.Rooms.filter((cpt) => {
+              if (cpt.capacity === 1) single = 'Single,';
+              if (cpt.capacity === 2) double = 'Double,';
+              if (cpt.capacity === 3) triple = 'Triple';
+            });
             return (
               <StyledHotel key={key} onClick={() => handleHotel(hotel.id)}>
                 <Image src={hotel.image}></Image>
                 <NameHotel>{hotel.name}</NameHotel>
+                <SubTitle>Tipos de acomodação:</SubTitle>
+                <StyledSubTitle>{`${single} ${double} ${triple}`}</StyledSubTitle>
               </StyledHotel>
             );
           })}
@@ -86,4 +94,21 @@ const NameHotel = styled.div`
   color: #343434;
 
   margin-top: 10px;
+`;
+
+const SubTitle = styled.div`
+  width: 100%;
+
+  font-weight: 700;
+  font-size: 12px;
+  line-height: 14px;
+
+  color: #3c3c3c;
+
+  margin-top: 13px;
+`;
+
+const StyledSubTitle = styled(SubTitle)`
+  font-weight: 400;
+  margin-top: 5px;
 `;
