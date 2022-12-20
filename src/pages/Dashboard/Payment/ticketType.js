@@ -19,19 +19,26 @@ export default function TicketType() {
   const [valueId, setValueId] = useState('');
   const [valueHotel, setValueHotel] = useState('');
   const [showOptions, setShowOptions] = useState(false);
-  const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(false);
+  const [showBookTicketButton, setShowBookTicketButton] = useState(false);
   const [price, setPrice] = useState('');
-  const [reviewTicketType, setReviewTicketType] = useState(false);
+  const [accommodation, setAccommodation] = useState('');
 
-  useEffect(() => {
-    console.log(ticketType);
-  }, []);
-
-  function selectTicketRemote(type) {
-    if (type.isRemote) {
-      setTicketTypeIsRemote(true);
-    } else {
-      setReviewTicketType(true); //Logica para finalizar o pedido
+  function selectTicket(type, buttonName) {
+    setAccommodation(buttonName);
+    if(!type.isRemote && buttonName === 'accommodation') {
+      setShowBookTicketButton(true); //Logica para finalizar o pedido
+    }
+    if(!type.isRemote && accommodation === '') {
+      setShowOptions(true);
+      setPrice(type.price);
+      setShowBookTicketButton(false);
+    }
+    if(type.isRemote) {
+      setValueHotel(null);
+      setAccommodation('');
+      setShowOptions(false);
+      setPrice(type.price);
+      setShowBookTicketButton(true);
     }
     setPrice(type.price);
   }
@@ -51,9 +58,9 @@ export default function TicketType() {
             return(
               !type.includesHotel? 
                 type.isRemote ?
-                  <EachButton>
+                  <EachButton key={type.id}>
 
-                    <Radio value={type.id} onClick={() => selectTicketRemote(type)}>
+                    <Radio value={type.id} onClick={() => selectTicket(type, 'modality')}>
                       <div className='type'>
                         {type.name}
                       </div>
@@ -62,9 +69,9 @@ export default function TicketType() {
 
                   </EachButton>
                   :
-                  <EachButton>
+                  <EachButton key={type}>
 
-                    <Radio value={0} onChange={e => setShowOptions(true)}>
+                    <Radio value={0} onChange={() => selectTicket(type, 'modality')}>
                       <div className='type'>
                         {type.name}
                       </div>
@@ -76,12 +83,6 @@ export default function TicketType() {
                 ('')
             );
           })}
-
-          {ticketTypeIsRemote ? 
-            <ReviewTicketType price={price}/>
-            : ('')
-          }
-
         </Buttons>
 
       </Radio.Group>
@@ -97,9 +98,9 @@ export default function TicketType() {
             {ticketType?.map(type => {
               return(
                 !type.isRemote?
-                  <EachButton>
+                  <EachButton key={type.id}>
 
-                    <Radio value={type.id} onClick={() => selectTicketRemote(type)}>
+                    <Radio value={type.id} onClick={() => selectTicket(type, 'accommodation')}>
                       <div className='type'>
                         { !type.isRemote && type.includesHotel? 'Com Hotel' : 'Sem Hotel'}
                       </div>
@@ -111,16 +112,14 @@ export default function TicketType() {
                   ('')
               );
             })}
-
-            {reviewTicketType ? 
-              <ReviewTicketType price={price} />
-              : ('')
-            }
-        
           </Buttons>
 
         </Radio.Group>
       </>) : ('')}
+      {showBookTicketButton ? 
+        <ReviewTicketType price={price}/>
+        : ('')
+      }
     </>
   );
 }
