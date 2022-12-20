@@ -2,13 +2,15 @@ import { useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import UserContext from '../../../contexts/UserContext';
 import useTicketType from '../../../hooks/api/useTicketType';
+import { postTicket } from '../../../services/ticketApi';
 import { Radio } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
-function ReviewTicketType({ price }) {
+function ReviewTicketType({ price, ticketTypeIsRemote, createTicket }) {
   return (
     <div>
       <Subtitle> Fechado! O total ficou em <strong> R$ {price} </strong>. Agora é só confirmar </Subtitle>
-      <BookingButton> <div className='button-text'> RESERVAR INGRESSO </div> </BookingButton>
+      <BookingButton onClick={async() => await createTicket(ticketTypeIsRemote)}> <div className='button-text'> RESERVAR INGRESSO </div> </BookingButton>
     </div>
   );
 }
@@ -16,6 +18,7 @@ function ReviewTicketType({ price }) {
 export default function TicketType() {
   const { userData: data } = useContext(UserContext);  
   const { ticketType } =  useTicketType(data.user.id);
+  const navigate = useNavigate();
 
   const [valueId, setValueId] = useState('');
   const [valueHotel, setValueHotel] = useState('');
@@ -25,7 +28,7 @@ export default function TicketType() {
   const [reviewTicketType, setReviewTicketType] = useState(false);
 
   useEffect(() => {
-    console.log(ticketType);
+    //console.log(data.token);
   }, []);
 
   function selectTicketRemote(type) {
@@ -35,6 +38,21 @@ export default function TicketType() {
       setReviewTicketType(true); //Logica para finalizar o pedido
     }
     setPrice(type.price);
+  }
+
+  async function createTicket(ticketTypeIsRemote) {
+    let body;
+    if (ticketTypeIsRemote) {
+      body = {
+        ticketTypeId: valueId
+      };
+    } else {
+      body = {
+        ticketTypeId: valueHotel
+      };
+    }
+    const bookCreated = await postTicket(data.token, body);
+    navigate('/payment/card', { ticketTypeId: bookCreated.ticketTypeId, ticketId: bookCreated.id });
   }
 
   return (
@@ -81,7 +99,7 @@ export default function TicketType() {
           })}
 
           {ticketTypeIsRemote ? 
-            <ReviewTicketType price={price}/>
+            <ReviewTicketType price={price} ticketTypeIsRemote={true} createTicket={createTicket}/>
             : ('')
           }
 
@@ -116,7 +134,7 @@ export default function TicketType() {
             })}
 
             {reviewTicketType ? 
-              <ReviewTicketType price={price} />
+              <ReviewTicketType price={price} ticketTypeIsRemote={false} createTicket={createTicket} />
               : ('')
             }
         
