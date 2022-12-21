@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import Cards from 'react-credit-cards';
+import * as Payment from 'payment';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { BsFillCheckCircleFill } from 'react-icons/bs';
 import Button from '../../../components/Form/Button';
 import { savePayment } from '../../../services/paymentApi';
+import useTicket from '../../../hooks/api/useTicket';
 import useToken from '../../../hooks/useToken';
 import 'react-credit-cards/es/styles-compiled.css';
 
@@ -20,13 +22,22 @@ export default function PaymentForm() {
     focus: ''
   });
 
+  const { ticket } = useTicket();
+
   async function sendPaymentData(event) {
     event.preventDefault();
 
-    const { focus, ...resultPaymentData } = paymentData;
+    const body = { 
+      focus, 
+      ticketId: ticket.id,
+      cardData: {
+        ...paymentData, 
+        issuer: Payment.fns.cardType(paymentData.number) 
+      }
+    };
 
     try {
-      await savePayment( resultPaymentData, token );
+      await savePayment( body, token );
       toast('Pagamento realizado com sucesso!');
       setPaymentWasMade(true);
     } catch (err) {
@@ -36,20 +47,20 @@ export default function PaymentForm() {
 
   return (
     <PaymentSession>
+      <SessionName>
+        <h1>Pagamento</h1>
+      </SessionName>
       {
         paymentWasMade?
           <PaymentConfirmed>
             <BsFillCheckCircleFill/>
             <ConfirmedPaymentMessage>
-              <h1>Pagamento confirmado!</h1>
+              <span>Pagamento confirmado!</span>
               <h1>Prossiga para escolha de hospedagem e atividades</h1>
             </ConfirmedPaymentMessage>
           </PaymentConfirmed>
           :
           <>
-            <SessionName>
-              <h1>Pagamento</h1>
-            </SessionName>
             <Form onSubmit={sendPaymentData}>
               <div>
                 <Cards
@@ -129,16 +140,18 @@ const PaymentSession = styled.div`
   height: 100%;
   width: 85%; 
   position: relative;
+  margin-top: 40px;
   padding-bottom: 80px;
 `;
 
 const SessionName = styled.div`
   color: #B1B1B1;
   margin-bottom: 25px;
+  font-size: 20px;
 `;
 
 const PaymentConfirmed = styled.div`
-display: flex;
+  display: flex;
   flex-direction: row;
   font-size: 40px;
   color: #36B853;
@@ -149,7 +162,12 @@ const ConfirmedPaymentMessage = styled.div`
   flex-direction: column;
   margin-left: 25px;
   font-size: 16px;
-  color: #454545;
+  line-height: 19px;
+  color: #8E8E8E;
+;
+  span{
+    color: #454545;
+  }
 `;
 
 const Form = styled.form`
@@ -157,6 +175,8 @@ const Form = styled.form`
   flex-direction: row;
   justify-content: space-between;
   font-size: 20px;
+  padding-bottom: 80px;
+  position: absolute;
 
   span {
     height: 20px;

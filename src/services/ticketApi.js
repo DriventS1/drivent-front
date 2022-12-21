@@ -8,3 +8,13 @@ export async function getTicket(token) {
   });
   return response.data;
 }
+
+export async function postTicket(token, body) {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await api.post('/tickets', body, config);
+  return response.data;
+}

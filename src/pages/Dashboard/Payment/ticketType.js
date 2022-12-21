@@ -2,13 +2,15 @@ import { useContext, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import UserContext from '../../../contexts/UserContext';
 import useTicketType from '../../../hooks/api/useTicketType';
+import { postTicket } from '../../../services/ticketApi';
 import { Radio } from 'antd';
+import { useNavigate } from 'react-router-dom';
 
-function ReviewTicketType({ price }) {
+function ReviewTicketType({ price, ticketTypeSelected, createTicket }) {
   return (
     <div>
       <Subtitle> Fechado! O total ficou em <strong> R$ {price} </strong>. Agora é só confirmar </Subtitle>
-      <BookingButton> <div className='button-text'> RESERVAR INGRESSO </div> </BookingButton>
+      <BookingButton onClick={async() =>  await createTicket(ticketTypeSelected)}> <div className='button-text'> RESERVAR INGRESSO </div> </BookingButton>
     </div>
   );
 }
@@ -16,12 +18,15 @@ function ReviewTicketType({ price }) {
 export default function TicketType() {
   const { userData: data } = useContext(UserContext);  
   const { ticketType } =  useTicketType(data.user.id);
+  const navigate = useNavigate();
+
   const [valueId, setValueId] = useState('');
   const [valueHotel, setValueHotel] = useState('');
   const [showOptions, setShowOptions] = useState(false);
   const [showBookTicketButton, setShowBookTicketButton] = useState(false);
   const [price, setPrice] = useState('');
   const [accommodation, setAccommodation] = useState('');
+  const [ticketTypeSelected, setTicketTypeSelected] = useState(null);
 
   function selectTicket(type, buttonName) {
     setAccommodation(buttonName);
@@ -40,8 +45,25 @@ export default function TicketType() {
       setPrice(type.price);
       setShowBookTicketButton(true);
     }
+    setTicketTypeSelected(type.isRemote);
     setPrice(type.price);
   }
+
+  async function createTicket(ticketTypeSelected) {
+    let body;
+    if (ticketTypeSelected) {
+      body = {
+        ticketTypeId: valueId
+      };
+    } else {
+      body = {
+        ticketTypeId: valueHotel
+      };
+    }
+    const bookCreated = await postTicket(data.token, body);
+    console.log(bookCreated);
+    navigate('/dashboard/payment/card', { state: { ticket: bookCreated.TicketType } });
+  }                       
 
   return (
     <>
@@ -112,12 +134,17 @@ export default function TicketType() {
                   ('')
               );
             })}
+        
           </Buttons>
 
         </Radio.Group>
       </>) : ('')}
       {showBookTicketButton ? 
-        <ReviewTicketType price={price}/>
+        <ReviewTicketType 
+          price={price}   
+          ticketTypeSelected={ticketTypeSelected}
+          createTicket={createTicket}
+        />
         : ('')
       }
     </>
