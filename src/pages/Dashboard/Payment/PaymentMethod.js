@@ -136,7 +136,7 @@ export default function PaymentForm() {
 }
 
 const PaymentSession = styled.div`
-  height: 100%;
+  height: 50%;
   width: 85%; 
   position: relative;
   margin-top: 40px;

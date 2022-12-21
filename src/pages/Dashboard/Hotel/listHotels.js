@@ -6,7 +6,7 @@ export function ListHotels({ hotels, setData, data }) {
       hotelId,
     });
   }
-
+  
   return (
     <>
       {hotels.map((hotel, key) => {

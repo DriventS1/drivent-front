@@ -61,7 +61,7 @@ export default function TicketType() {
       };
     }
     const bookCreated = await postTicket(data.token, body);
-    navigate('/dashboard/payment/card', { state: { ticket: bookCreated.TicketType } });
+    navigate('/dashboard/payments/card', { state: { ticket: bookCreated.TicketType } });
   }                       
 
   return (
