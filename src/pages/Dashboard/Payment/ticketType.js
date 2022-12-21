@@ -6,11 +6,11 @@ import { postTicket } from '../../../services/ticketApi';
 import { Radio } from 'antd';
 import { useNavigate } from 'react-router-dom';
 
-function ReviewTicketType({ price, ticketTypeIsRemote, createTicket }) {
+function ReviewTicketType({ price, ticketTypeSelected, createTicket }) {
   return (
     <div>
       <Subtitle> Fechado! O total ficou em <strong> R$ {price} </strong>. Agora é só confirmar </Subtitle>
-      <BookingButton onClick={async() => await createTicket(ticketTypeIsRemote)}> <div className='button-text'> RESERVAR INGRESSO </div> </BookingButton>
+      <BookingButton onClick={async() =>  await createTicket(ticketTypeSelected)}> <div className='button-text'> RESERVAR INGRESSO </div> </BookingButton>
     </div>
   );
 }
@@ -23,26 +23,35 @@ export default function TicketType() {
   const [valueId, setValueId] = useState('');
   const [valueHotel, setValueHotel] = useState('');
   const [showOptions, setShowOptions] = useState(false);
-  const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(false);
+  const [showBookTicketButton, setShowBookTicketButton] = useState(false);
   const [price, setPrice] = useState('');
-  const [reviewTicketType, setReviewTicketType] = useState(false);
+  const [accommodation, setAccommodation] = useState('');
+  const [ticketTypeSelected, setTicketTypeSelected] = useState(null);
 
-  useEffect(() => {
-    //console.log(data.token);
-  }, []);
-
-  function selectTicketRemote(type) {
-    if (type.isRemote) {
-      setTicketTypeIsRemote(true);
-    } else {
-      setReviewTicketType(true); //Logica para finalizar o pedido
+  function selectTicket(type, buttonName) {
+    setAccommodation(buttonName);
+    if(!type.isRemote && buttonName === 'accommodation') {
+      setShowBookTicketButton(true); //Logica para finalizar o pedido
     }
+    if(!type.isRemote && accommodation === '') {
+      setShowOptions(true);
+      setPrice(type.price);
+      setShowBookTicketButton(false);
+    }
+    if(type.isRemote) {
+      setValueHotel(null);
+      setAccommodation('');
+      setShowOptions(false);
+      setPrice(type.price);
+      setShowBookTicketButton(true);
+    }
+    setTicketTypeSelected(type.isRemote);
     setPrice(type.price);
   }
 
-  async function createTicket(ticketTypeIsRemote) {
+  async function createTicket(ticketTypeSelected) {
     let body;
-    if (ticketTypeIsRemote) {
+    if (ticketTypeSelected) {
       body = {
         ticketTypeId: valueId
       };
@@ -52,8 +61,8 @@ export default function TicketType() {
       };
     }
     const bookCreated = await postTicket(data.token, body);
-    navigate('/payment/card', { ticketTypeId: bookCreated.ticketTypeId, ticketId: bookCreated.id });
-  }
+    navigate('/dashboard/payment/card', { state: { ticket: bookCreated.TicketType } });
+  }                       
 
   return (
     <>
@@ -64,17 +73,15 @@ export default function TicketType() {
       <Subtitle>
         Primeiro, escolha sua modalidade de ingresso
       </Subtitle>
-
       <Radio.Group onChange={e => setValueId(e.target.value)} value={valueId}>
         <Buttons>
-
           {ticketType?.map(type => {
             return(
               !type.includesHotel? 
                 type.isRemote ?
-                  <EachButton>
+                  <EachButton key={type.id}>
 
-                    <Radio value={type.id} onClick={() => selectTicketRemote(type)}>
+                    <Radio value={type.id} onClick={() => selectTicket(type, 'modality')}>
                       <div className='type'>
                         {type.name}
                       </div>
@@ -83,9 +90,9 @@ export default function TicketType() {
 
                   </EachButton>
                   :
-                  <EachButton>
+                  <EachButton key={type}>
 
-                    <Radio value={0} onChange={e => setShowOptions(true)}>
+                    <Radio value={0} onChange={() => selectTicket(type, 'modality')}>
                       <div className='type'>
                         {type.name}
                       </div>
@@ -97,12 +104,6 @@ export default function TicketType() {
                 ('')
             );
           })}
-
-          {ticketTypeIsRemote ? 
-            <ReviewTicketType price={price} ticketTypeIsRemote={true} createTicket={createTicket}/>
-            : ('')
-          }
-
         </Buttons>
 
       </Radio.Group>
@@ -118,9 +119,9 @@ export default function TicketType() {
             {ticketType?.map(type => {
               return(
                 !type.isRemote?
-                  <EachButton>
+                  <EachButton key={type.id}>
 
-                    <Radio value={type.id} onClick={() => selectTicketRemote(type)}>
+                    <Radio value={type.id} onClick={() => selectTicket(type, 'accommodation')}>
                       <div className='type'>
                         { !type.isRemote && type.includesHotel? 'Com Hotel' : 'Sem Hotel'}
                       </div>
@@ -132,20 +133,22 @@ export default function TicketType() {
                   ('')
               );
             })}
-
-            {reviewTicketType ? 
-              <ReviewTicketType price={price} ticketTypeIsRemote={false} createTicket={createTicket} />
-              : ('')
-            }
         
           </Buttons>
 
         </Radio.Group>
       </>) : ('')}
+      {showBookTicketButton ? 
+        <ReviewTicketType 
+          price={price}   
+          ticketTypeSelected={ticketTypeSelected}
+          createTicket={createTicket}
+        />
+        : ('')
+      }
     </>
   );
 }
-
 // Com o valueId escolhido uma function poderá enviar esse número como ticketId para criar o ticket do usuário
 
 const Title = styled.div`
@@ -215,4 +218,3 @@ const BookingButton = styled.div`
     color: #000000; 
   }
 `;
-

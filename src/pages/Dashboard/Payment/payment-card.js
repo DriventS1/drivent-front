@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import UserContext from '../../../contexts/UserContext';
 import useEnrollment from '../../../hooks/api/useEnrollment';
 import useTicketType from '../../../hooks/api/useTicketType';
+import PaymentMethod from './PaymentMethod';
+import { useLocation } from 'react-router-dom';
 
 export default function PaymentCard() {
   const { userData: data } = useContext(UserContext);
@@ -10,6 +12,9 @@ export default function PaymentCard() {
   const { enrollment } = useEnrollment();
   const { ticketType } = useTicketType();
 
+  const location = useLocation();
+  const { ticket } = location.state;
+  
   return (
     <>
       <Title>Ingresso e pagamento</Title>
@@ -17,16 +22,16 @@ export default function PaymentCard() {
       {enrollment ? (
         <>
           <Status>Ingresso escolhido</Status>
-          {ticketType
-            ? ticketType.map((ticket, key) => (
-              <Box key={key}>
-                <Description>
-                  <p>{ticket.name}</p>
-                  <p>R${ticket.price}</p>
-                </Description>
-              </Box>
-            ))
+          {ticket? 
+            <Box key={ticket.id}>
+              <Description>
+                <p>{ticket.name}</p>
+                <p>R${ticket.price}</p>
+              </Description>
+            </Box>
+
             : ''}
+          <PaymentMethod/>
         </>
       ) : (
         <PageError>
@@ -62,7 +67,7 @@ const Box = styled.div`
   align-items: center;
 
   width: 290px;
-  height: 145px;
+  height: 108px;
   border: 1px solid #cecece;
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   border-radius: 20px;

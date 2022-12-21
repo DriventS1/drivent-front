@@ -16,6 +16,5 @@ export async function postTicket(token, body) {
     },
   };
   const response = await api.post('/tickets', body, config);
-  console.log(response.data);
   return response.data;
 }
