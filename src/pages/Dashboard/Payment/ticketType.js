@@ -61,7 +61,6 @@ export default function TicketType() {
       };
     }
     const bookCreated = await postTicket(data.token, body);
-    console.log(bookCreated);
     navigate('/dashboard/payment/card', { state: { ticket: bookCreated.TicketType } });
   }                       
 
@@ -150,7 +149,6 @@ export default function TicketType() {
     </>
   );
 }
-
 // Com o valueId escolhido uma function poderá enviar esse número como ticketId para criar o ticket do usuário
 
 const Title = styled.div`
@@ -220,4 +218,3 @@ const BookingButton = styled.div`
     color: #000000; 
   }
 `;
-
