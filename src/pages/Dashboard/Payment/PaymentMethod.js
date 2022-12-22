@@ -22,6 +22,7 @@ export default function PaymentForm() {
     focus: ''
   });
   const { ticket } = useTicket();
+  console.log(ticket);
   
   async function sendPaymentData(event) {
     event.preventDefault();
