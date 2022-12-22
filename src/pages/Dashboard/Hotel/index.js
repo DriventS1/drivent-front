@@ -17,12 +17,16 @@ export default function Hotel() {
     hotelId: null,
   });
   const [paymentHasDone, setPaymentHasDone] = useState(false);
+  const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(false);
 
   //console.log(data);
   useEffect(() => {
-    console.log(ticket);
+    //console.log(ticket);
     if (ticket?.status === 'PAID') {
       setPaymentHasDone(true);
+    }
+    if (ticket?.TicketType.isRemote) {
+      setTicketTypeIsRemote(true);
     }
   }, [data]);
 
@@ -32,21 +36,27 @@ export default function Hotel() {
 
       {!paymentHasDone ? 
         <WarningHotel> 
-          <span> Sua modalidade de ingresso não inclui hospedagem </span> 
-          <span> Prossiga para a escolha de atividades </span>
+          <span> Você precisa ter confirmado o pagamento antes </span> 
+          <span> de fazer a escolha de hospedagem </span>
         </WarningHotel> 
         : 
-        <>
-          <Status>Primeiro, escolha seu hotel</Status>
+        ticketTypeIsRemote ? 
+          <WarningHotel> 
+            <span> Sua modalidade de ingresso não inclui hospedagem </span> 
+            <span> Prossiga para a escolha de atividades </span>
+          </WarningHotel> 
+          :
+          <>
+            <Status>Primeiro, escolha seu hotel</Status>
 
-          {hotels ? (
-            <Container>
-              <ListHotels hotels={hotels} setData={setData} data={data} />
-            </Container>
-          ) : (
-            ''
-          )}
-        </>
+            {hotels ? (
+              <Container>
+                <ListHotels hotels={hotels} setData={setData} data={data} />
+              </Container>
+            ) : (
+              ''
+            )}
+          </>
       }
     </HotelSpace>
   );
