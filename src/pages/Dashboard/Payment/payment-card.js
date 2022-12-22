@@ -1,20 +1,23 @@
-import { useContext } from 'react';
 import styled from 'styled-components';
-import UserContext from '../../../contexts/UserContext';
 import useEnrollment from '../../../hooks/api/useEnrollment';
-import useTicketType from '../../../hooks/api/useTicketType';
 import PaymentMethod from './PaymentMethod';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import PaymentConfirmed from './paymentConfirmed';
 
 export default function PaymentCard() {
-  const { userData: data } = useContext(UserContext);
-
+  const navigate = useNavigate();
   const { enrollment } = useEnrollment();
-  const { ticketType } = useTicketType();
 
   const location = useLocation();
-  const { ticket } = location.state;
-  
+  const { state } = location;
+
+  if (!state) {
+    navigate('/dashboard/payment');
+    return <></>;
+  }
+
+  const { ticket } = state;
+
   return (
     <>
       <Title>Ingresso e pagamento</Title>
@@ -22,21 +25,21 @@ export default function PaymentCard() {
       {enrollment ? (
         <>
           <Status>Ingresso escolhido</Status>
-          {ticket? 
-            <Box key={ticket.id}>
+          {ticket ? (
+            <Box key={ticket.TicketType.id}>
               <Description>
-                <p>{ticket.name}</p>
-                <p>R${ticket.price}</p>
+                <p>{ticket.TicketType.name}</p>
+                <p>R${ticket.TicketType.price}</p>
               </Description>
             </Box>
-
-            : ''}
-          <PaymentMethod/>
+          ) : (
+            ''
+          )}
+          {ticket.status === 'RESERVED' && <PaymentMethod />}
+          {ticket.status === 'PAID' && <PaymentConfirmed />}
         </>
       ) : (
-        <PageError>
-          <div>Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso</div>
-        </PageError>
+        ''
       )}
     </>
   );
@@ -73,24 +76,6 @@ const Box = styled.div`
   border-radius: 20px;
   margin: 25px 20px 10px 0;
   background-color: #ffeed2;
-`;
-
-const PageError = styled.div`
-  width: 100%;
-  height: 80%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  div {
-    width: 50%;
-  }
-
-  font-weight: 400;
-  font-size: 20px;
-  line-height: 24px;
-  color: #8e8e8e;
 `;
 
 const Description = styled.div`
