@@ -9,6 +9,7 @@ import { savePayment } from '../../../services/paymentApi';
 import useTicket from '../../../hooks/api/useTicket';
 import useToken from '../../../hooks/useToken';
 import 'react-credit-cards/es/styles-compiled.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function PaymentForm() {
   const token = useToken();
@@ -22,7 +23,8 @@ export default function PaymentForm() {
     focus: ''
   });
   const { ticket } = useTicket();
-  console.log(ticket);
+  const navigate = useNavigate();
+  //console.log(ticket);
   
   async function sendPaymentData(event) {
     event.preventDefault();
@@ -40,6 +42,7 @@ export default function PaymentForm() {
       await savePayment( body, token );
       toast('Pagamento realizado com sucesso!');
       setPaymentWasMade(true);
+      navigate('/dashboard/hotel', { state: { paymentWasMade: true, ticket: ticket } });
     } catch (err) {
       toast('Não foi possível realizar o pagamento!');
     }
@@ -125,7 +128,7 @@ export default function PaymentForm() {
                     left: '0',
                     bottom: '0'
                   }}
-                  onClick={e => sendPaymentData(e)}>
+                  onClick={async(e) => await sendPaymentData(e)}>
                   Finalizar pagamento
                 </Button>
               </CardData>

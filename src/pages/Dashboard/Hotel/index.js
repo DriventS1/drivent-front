@@ -6,11 +6,14 @@ import { Status, Title } from '../Payment/payment-card';
 import { ListHotels } from '../Hotel/listHotels';
 import WarningHotel from './WarningHotel';
 import useTicket from '../../../hooks/api/useTicket';
+import { useLocation } from 'react-router-dom';
 
 export default function Hotel() {
   const { hotels } = useHotel();
-  const { ticket } = useTicket();
-
+  //const { ticket } = useTicket();
+  const location = useLocation();
+  const ticket = location.state?.ticket;
+  //const { paymentWasMade } = location.state;
   //console.log(hotels[0].Rooms);
 
   const [data, setData] = useState({
@@ -18,15 +21,16 @@ export default function Hotel() {
   });
   const [paymentHasDone, setPaymentHasDone] = useState(false);
   const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(false);
-
+  console.log(location.state);
   //console.log(data);
   useEffect(() => {
-    //console.log(ticket);
-    if (ticket?.status === 'PAID') {
-      setPaymentHasDone(true);
-    }
-    if (ticket?.TicketType.isRemote) {
-      setTicketTypeIsRemote(true);
+    if (location.state) {
+      if (ticket?.status === 'PAID') {
+        setPaymentHasDone(true);
+      }
+      if (ticket?.TicketType.isRemote) {
+        setTicketTypeIsRemote(true);
+      }
     }
   }, [data]);
 
@@ -36,8 +40,7 @@ export default function Hotel() {
 
       {!paymentHasDone ? 
         <WarningHotel> 
-          <span> Você precisa ter confirmado o pagamento antes </span> 
-          <span> de fazer a escolha de hospedagem </span>
+          <span> Você precisa ter confirmado o pagamento antes de fazer a escolha de hospedagem </span> 
         </WarningHotel> 
         : 
         ticketTypeIsRemote ? 
