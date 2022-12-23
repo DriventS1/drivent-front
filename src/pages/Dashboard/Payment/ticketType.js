@@ -1,24 +1,35 @@
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, Redirect } from 'react';
 import styled from 'styled-components';
 import UserContext from '../../../contexts/UserContext';
 import useTicketType from '../../../hooks/api/useTicketType';
 import { postTicket } from '../../../services/ticketApi';
 import { Radio } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import useEnrollment from '../../../hooks/api/useEnrollment';
+import useTicket from '../../../hooks/api/useTicket';
 
 function ReviewTicketType({ price, ticketTypeSelected, createTicket }) {
   return (
     <div>
-      <Subtitle> Fechado! O total ficou em <strong> R$ {price} </strong>. Agora é só confirmar </Subtitle>
-      <BookingButton onClick={async() =>  await createTicket(ticketTypeSelected)}> <div className='button-text'> RESERVAR INGRESSO </div> </BookingButton>
+      <Subtitle>
+        {' '}
+        Fechado! O total ficou em <strong> R$ {price} </strong>. Agora é só confirmar{' '}
+      </Subtitle>
+      <BookingButton onClick={async() => await createTicket(ticketTypeSelected)}>
+        {' '}
+        <div className="button-text"> RESERVAR INGRESSO </div>{' '}
+      </BookingButton>
     </div>
   );
 }
 
 export default function TicketType() {
-  const { userData: data } = useContext(UserContext);  
-  const { ticketType } =  useTicketType(data.user.id);
+  const { userData: data } = useContext(UserContext);
+  const { ticketType } = useTicketType(data.user.id);
   const navigate = useNavigate();
+  const { enrollment } = useEnrollment();
+  const { ticket } = useTicket();
+  console.log(ticket);
 
   const [valueId, setValueId] = useState('');
   const [valueHotel, setValueHotel] = useState('');
@@ -30,15 +41,15 @@ export default function TicketType() {
 
   function selectTicket(type, buttonName) {
     setAccommodation(buttonName);
-    if(!type.isRemote && buttonName === 'accommodation') {
+    if (!type.isRemote && buttonName === 'accommodation') {
       setShowBookTicketButton(true); //Logica para finalizar o pedido
     }
-    if(!type.isRemote && accommodation === '') {
+    if (!type.isRemote && accommodation === '') {
       setShowOptions(true);
       setPrice(type.price);
       setShowBookTicketButton(false);
     }
-    if(type.isRemote) {
+    if (type.isRemote) {
       setValueHotel(null);
       setAccommodation('');
       setShowOptions(false);
@@ -53,104 +64,91 @@ export default function TicketType() {
     let body;
     if (ticketTypeSelected) {
       body = {
-        ticketTypeId: valueId
+        ticketTypeId: valueId,
       };
     } else {
       body = {
-        ticketTypeId: valueHotel
+        ticketTypeId: valueHotel,
       };
     }
     const bookCreated = await postTicket(data.token, body);
-    console.log(bookCreated);
-    navigate('/dashboard/payment/card', { state: { ticket: bookCreated.TicketType } });
-  }                       
+    navigate('/dashboard/payment/card', { state: { ticket: bookCreated } });
+  }
 
   return (
     <>
-      <Title>
-        Ingresso e pagamento
-      </Title>
+      <Title>Ingresso e pagamento</Title>
+      {enrollment && !ticket && (
+        <>
+          <Subtitle>Primeiro, escolha sua modalidade de ingresso</Subtitle>
+          <Radio.Group onChange={(e) => setValueId(e.target.value)} value={valueId}>
+            <Buttons>
+              {ticketType?.map((type) => {
+                return !type.includesHotel ? (
+                  type.isRemote ? (
+                    <EachButton key={type.id}>
+                      <Radio value={type.id} onClick={() => selectTicket(type, 'modality')}>
+                        <div className="type">{type.name}</div>
+                        <div className="price">+ R${type.price}</div>
+                      </Radio>
+                    </EachButton>
+                  ) : (
+                    <EachButton key={type}>
+                      <Radio value={0} onChange={() => selectTicket(type, 'modality')}>
+                        <div className="type">{type.name}</div>
+                        <div className="price">+ R${type.price}</div>
+                      </Radio>
+                    </EachButton>
+                  )
+                ) : (
+                  ''
+                );
+              })}
+            </Buttons>
+          </Radio.Group>
 
-      <Subtitle>
-        Primeiro, escolha sua modalidade de ingresso
-      </Subtitle>
-      <Radio.Group onChange={e => setValueId(e.target.value)} value={valueId}>
-        <Buttons>
-          {ticketType?.map(type => {
-            return(
-              !type.includesHotel? 
-                type.isRemote ?
-                  <EachButton key={type.id}>
+          {showOptions ? (
+            <>
+              <Subtitle>Ótimo, agora escolha sua modalidade de hospedagem</Subtitle>
 
-                    <Radio value={type.id} onClick={() => selectTicket(type, 'modality')}>
-                      <div className='type'>
-                        {type.name}
-                      </div>
-                      <div className='price'>+ R${type.price}</div>
-                    </Radio>
-
-                  </EachButton>
-                  :
-                  <EachButton key={type}>
-
-                    <Radio value={0} onChange={() => selectTicket(type, 'modality')}>
-                      <div className='type'>
-                        {type.name}
-                      </div>
-                      <div className='price'>+ R${type.price}</div>
-                    </Radio>
-
-                  </EachButton>
-                : 
-                ('')
-            );
-          })}
-        </Buttons>
-
-      </Radio.Group>
-
-      {showOptions ? (<> 
-        <Subtitle>
-            Ótimo, agora escolha sua modalidade de hospedagem
-        </Subtitle>
-
-        <Radio.Group onChange={e => setValueHotel(e.target.value)} value={valueHotel}>
-
-          <Buttons>
-            {ticketType?.map(type => {
-              return(
-                !type.isRemote?
-                  <EachButton key={type.id}>
-
-                    <Radio value={type.id} onClick={() => selectTicket(type, 'accommodation')}>
-                      <div className='type'>
-                        { !type.isRemote && type.includesHotel? 'Com Hotel' : 'Sem Hotel'}
-                      </div>
-                      <div className='price'>+ R${Number(type.price) - 250}</div>
-                    </Radio>
-
-                  </EachButton>
-                  :
-                  ('')
-              );
-            })}
-        
-          </Buttons>
-
-        </Radio.Group>
-      </>) : ('')}
-      {showBookTicketButton ? 
-        <ReviewTicketType 
-          price={price}   
-          ticketTypeSelected={ticketTypeSelected}
-          createTicket={createTicket}
-        />
-        : ('')
-      }
+              <Radio.Group onChange={(e) => setValueHotel(e.target.value)} value={valueHotel}>
+                <Buttons>
+                  {ticketType?.map((type) => {
+                    return !type.isRemote ? (
+                      <EachButton key={type.id}>
+                        <Radio value={type.id} onClick={() => selectTicket(type, 'accommodation')}>
+                          <div className="type">{!type.isRemote && type.includesHotel ? 'Com Hotel' : 'Sem Hotel'}</div>
+                          <div className="price">+ R${Number(type.price) - 250}</div>
+                        </Radio>
+                      </EachButton>
+                    ) : (
+                      ''
+                    );
+                  })}
+                </Buttons>
+              </Radio.Group>
+            </>
+          ) : (
+            ''
+          )}
+          {showBookTicketButton ? (
+            <ReviewTicketType price={price} ticketTypeSelected={ticketTypeSelected} createTicket={createTicket} />
+          ) : (
+            ''
+          )}
+        </>
+      )}
+      {enrollment && ticket && (
+        navigate('/dashboard/payment/card', { state: { ticket } })
+      )}
+      {!enrollment && (
+        <PageError>
+          <div>Você precisa completar sua inscrição antes de prosseguir pra escolha de ingresso</div>
+        </PageError>
+      )}
     </>
   );
 }
-
 // Com o valueId escolhido uma function poderá enviar esse número como ticketId para criar o ticket do usuário
 
 const Title = styled.div`
@@ -170,14 +168,14 @@ const Buttons = styled.div`
   flex-direction: row;
 
   .type {
-  color: black;
-  margin: 3px;
-}
+    color: black;
+    margin: 3px;
+  }
 
   .price {
-  color: gray;
-  margin: 3px;
-}
+    color: gray;
+    margin: 3px;
+  }
 `;
 
 const EachButton = styled.div`
@@ -187,10 +185,10 @@ const EachButton = styled.div`
   align-items: center;
   width: 145px;
   height: 145px;
-  border: 1px solid #CECECE;
+  border: 1px solid #cecece;
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   border-radius: 20px;
-  margin:  10px 20px 10px 0;
+  margin: 10px 20px 10px 0;
 `;
 
 const BookingButton = styled.div`
@@ -198,8 +196,8 @@ const BookingButton = styled.div`
   height: 37px;
   border-radius: 4px;
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
-  border: 1px solid #CECECE;
-  background-color: #E0E0E0;
+  border: 1px solid #cecece;
+  background-color: #e0e0e0;
   margin: 10px 0 10px 0;
   display: flex;
   justify-content: center;
@@ -217,7 +215,24 @@ const BookingButton = styled.div`
 
   .button-text {
     font-size: 14px;
-    color: #000000; 
+    color: #000000;
   }
 `;
 
+const PageError = styled.div`
+  width: 100%;
+  height: 80%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  div {
+    width: 50%;
+  }
+
+  font-weight: 400;
+  font-size: 20px;
+  line-height: 24px;
+  color: #8e8e8e;
+`;
