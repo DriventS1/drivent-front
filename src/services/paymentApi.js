@@ -1,4 +1,4 @@
-import api from './api';
+import api from './api'; 
 
 export async function savePayment(body, token) {
   const response = await api.post('/payments/process', body, {
