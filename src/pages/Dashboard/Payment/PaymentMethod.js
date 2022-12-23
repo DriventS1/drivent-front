@@ -8,6 +8,7 @@ import { savePayment } from '../../../services/paymentApi';
 import useTicket from '../../../hooks/api/useTicket';
 import useToken from '../../../hooks/useToken';
 import 'react-credit-cards/es/styles-compiled.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function PaymentMethod() {
   const token = useToken();
@@ -20,6 +21,7 @@ export default function PaymentMethod() {
     focus: '',
   });
   const { ticket } = useTicket();
+  const navigate = useNavigate();
 
   async function sendPaymentData(event) {
     event.preventDefault();
@@ -36,6 +38,8 @@ export default function PaymentMethod() {
     try {
       await savePayment(body, token);
       toast('Pagamento realizado com sucesso!');
+      setPaymentWasMade(true);
+      navigate('/dashboard/hotel', { state: { paymentWasMade: true, ticket: ticket } });
     } catch (err) {
       toast('Não foi possível realizar o pagamento!');
     }
@@ -46,74 +50,88 @@ export default function PaymentMethod() {
       <SessionName>
         <h1>Pagamento</h1>
       </SessionName>
-
-      <Form onSubmit={sendPaymentData}>
-        <div>
-          <Cards
-            cvc={paymentData.cvc}
-            expiry={paymentData.expiry}
-            focused={focus}
-            name={paymentData.name}
-            number={paymentData.number}
-          />
-        </div>
-        <CardData>
-          <div style={{ height: '34%' }}>
-            <input
-              type="tel"
-              name="number"
-              placeholder="Card Number"
-              onChange={(e) => setPaymentData({ ...paymentData, number: e.target.value })}
-              onFocus={(e) => setFocus(e.target.name)}
-            />
-            <span>e.g.: 49..., 51..., 36..., 37</span>
-          </div>
-          <div>
-            <input
-              type="text"
-              name="name"
-              placeholder="Name"
-              onChange={(e) => setPaymentData({ ...paymentData, name: e.target.value })}
-              onFocus={(e) => setFocus(e.target.name)}
-            />
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-            }}
-          >
-            <input
-              style={{ width: '65%' }}
-              type="tel"
-              name="expiry"
-              placeholder="Valid Trhu"
-              onChange={(e) => setPaymentData({ ...paymentData, expiry: e.target.value })}
-              onFocus={(e) => setPaymentData({ ...paymentData, focus: e.target.name })}
-            />
-            <input
-              style={{ width: '30%' }}
-              type="tel"
-              name="cvc"
-              placeholder="CVC"
-              onChange={(e) => setPaymentData({ ...paymentData, cvc: e.target.value })}
-              onFocus={(e) => setFocus(e.target.name)}
-            />
-          </div>
-          <Button
-            type="submit"
-            style={{
-              position: 'absolute',
-              left: '0',
-              bottom: '0',
-            }}
-            onClick={(e) => sendPaymentData(e)}
-          >
-            Finalizar pagamento
-          </Button>
-        </CardData>
-      </Form>
+      {
+        paymentWasMade?
+          <PaymentConfirmed>
+            <BsFillCheckCircleFill/>
+            <ConfirmedPaymentMessage>
+              <span>Pagamento confirmado!</span>
+              <h1>Prossiga para escolha de hospedagem e atividades</h1>
+            </ConfirmedPaymentMessage>
+          </PaymentConfirmed>
+          :
+          <>
+            <Form onSubmit={sendPaymentData}>
+              <div>
+                <Cards
+                  cvc={paymentData.cvc}
+                  expiry={paymentData.expiry}
+                  focused={focus}
+                  name={paymentData.name}
+                  number={paymentData.number}
+                />
+              </div>
+              <CardData>
+                <div style={{ height: '34%' }}>
+                  <input
+                    type="tel"
+                    name="number"
+                    placeholder="Card Number"
+                    onChange={e => setPaymentData({ ...paymentData, number: e.target.value })}
+                    onFocus={e => setFocus(e.target.name)}
+                  />
+                  <span>e.g.: 49..., 51..., 36..., 37</span>
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Name"
+                    onChange={e => setPaymentData({ ...paymentData, name: e.target.value })}
+                    onFocus={e => setFocus(e.target.name)}
+                  />
+                </div>
+                <div
+                  style={
+                    {
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'space-between'
+                    }
+                  }>
+                  <input
+                    style={
+                      { width: '65%' }
+                    }
+                    type="tel"
+                    name="expiry"
+                    placeholder="Valid Trhu"
+                    onChange={e => setPaymentData({ ...paymentData, expiry: e.target.value })}
+                    onFocus={e => setPaymentData({ ...paymentData, focus: e.target.name })}
+                  />
+                  <input
+                    style={{ width: '30%' }}
+                    type="tel"
+                    name="cvc"
+                    placeholder="CVC"
+                    onChange={e => setPaymentData({ ...paymentData, cvc: e.target.value })}
+                    onFocus={e => setFocus(e.target.name)}
+                  />
+                </div>
+                <Button
+                  type='submit'
+                  style={{
+                    position: 'absolute',
+                    left: '0',
+                    bottom: '0'
+                  }}
+                  onClick={async(e) => await sendPaymentData(e)}>
+                  Finalizar pagamento
+                </Button>
+              </CardData>
+            </Form>
+          </>
+      }
     </PaymentSession>
   );
 }
