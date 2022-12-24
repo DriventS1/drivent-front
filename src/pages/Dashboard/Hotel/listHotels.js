@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Vacancies } from './Vacancies';
 
 export function ListHotels({ hotels, setData, data }) {
   function handleHotel(hotelId) {
@@ -24,6 +25,7 @@ export function ListHotels({ hotels, setData, data }) {
             <NameHotel>{hotel.name}</NameHotel>
             <SubTitle>Tipos de acomodação:</SubTitle>
             <StyledSubTitle>{`${single} ${double} ${triple}`}</StyledSubTitle>
+            <Vacancies hotelId={ hotel.id }/>
           </StyledHotel>
         );
       })}
