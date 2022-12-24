@@ -34,7 +34,6 @@ export default function Hotel() {
       if (ticket?.TicketType.isRemote) {
         setTicketTypeIsRemote(true);
       }
-      
     }
   }, [data]);
 
@@ -65,7 +64,6 @@ export default function Hotel() {
               ''
             )}
           </>
-
 
       }
     </HotelSpace>
