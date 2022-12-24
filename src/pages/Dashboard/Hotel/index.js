@@ -24,7 +24,7 @@ export default function Hotel() {
   const [paymentHasDone, setPaymentHasDone] = useState(false);
 
   const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(false);
-  console.log(location.state);
+  console.log(location);
   //console.log(data);
   useEffect(() => {
     if (location.state) {

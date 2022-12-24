@@ -29,6 +29,8 @@ export default function TicketType() {
   const navigate = useNavigate();
   const { enrollment } = useEnrollment();
   const { ticket } = useTicket();
+  console.log(ticket);
+
   const [valueId, setValueId] = useState('');
   const [valueHotel, setValueHotel] = useState('');
   const [showOptions, setShowOptions] = useState(false);

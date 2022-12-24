@@ -3,33 +3,35 @@ import { useEffect, useState, useContext } from 'react';
 import UserContext from '../../../contexts/UserContext';
 import { getBookings } from '../../../services/bookingApi';
 
-export async function Vacancies({ hotelId }) {
-  const [ hotels, setHotels ] = useState(null);
-  const [ vacancies, setVacancies ] = useState(0);
-  
-  const { userData: data } = useContext(UserContext);
-
-  try {
-    const hotelsWithRooms = await getBookings({ token: data.token, hotelId });
-    setHotels(hotelsWithRooms);
-  } catch (error) {
-    window.alert(error);
-  }
-
-  if(hotels !== null) {
-    hotels.map( hotel => {
-      hotel.Rooms.map( room => {
-        const roomVacancies = Number(room.capacity) - Number(room._count.Booking) + vacancies;
-        setVacancies(roomVacancies);
-      });
-    });
-  }
+function VacanciesCalculated({ hotel }) {
+  let vacancies = 0;
+  hotel.Rooms?.forEach( room => {
+    const updateVacancies = Number(room.capacity) - Number(room._count.Booking) + Number(vacancies);
+    vacancies = updateVacancies;
+  });
 
   return(
-    hotelId && vacancies !== null?
+    <h2>{vacancies}</h2>
+  );
+}
+
+export function Vacancies({ hotelId }) {
+  const [ hotel, setHotel ] = useState(null);
+
+  const { userData: data } = useContext(UserContext);
+
+  useEffect(() => {
+    const promise = getBookings({ token: data.token, hotelId });
+    promise.then(hotels => setHotel(hotels));
+  });
+
+  return(
+    hotelId && (hotel !== null)?
       <>
         <SubTitle>Vagas Disponíveis</SubTitle>
-        <StyledSubTitle>{vacancies}</StyledSubTitle>
+        <StyledSubTitle>
+          <VacanciesCalculated hotel={hotel}/>
+        </StyledSubTitle>
       </>
       :
       <></>
