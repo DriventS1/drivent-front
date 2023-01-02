@@ -11,9 +11,9 @@ import { useLocation } from 'react-router-dom';
 
 export default function Hotel() {
   const { hotels } = useHotel();
-  //const { ticket } = useTicket();
+  const { ticket } = useTicket();
   const location = useLocation();
-  const ticket = location.state?.ticket;
+  //const ticket = location.state?.ticket;
   //const { paymentWasMade } = location.state;
 
   //console.log(hotels[0].Rooms);
@@ -24,30 +24,30 @@ export default function Hotel() {
   const [paymentHasDone, setPaymentHasDone] = useState(false);
 
   const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(false);
-  console.log(location.state);
-  //console.log(data);
-  useEffect(() => {
-    if (location.state) {
-      if (ticket?.status === 'PAID') {
-        setPaymentHasDone(true);
-      }
-      if (ticket?.TicketType.isRemote) {
-        setTicketTypeIsRemote(true);
-      }
-    }
-  }, [data]);
+  //console.log(location.state);
+  console.log(ticket);
+  // useEffect(() => {
+  //   if (ticket && ticket !== null) {
+  //     if (ticket?.status === 'PAID') {
+  //       setPaymentHasDone(true);
+  //     }
+  //     if (ticket?.TicketType.isRemote) {
+  //       setTicketTypeIsRemote(true);
+  //     }
+  //   }
+  // }, [data]);
 
   return (
     <HotelSpace paymentDone={paymentHasDone}>
       <Title>Escolha de hotel e quarto</Title>
 
-      {!paymentHasDone ? 
+      {ticket?.status !== 'PAID' ? 
         <WarningHotel> 
 
           <span> Você precisa ter confirmado o pagamento antes de fazer a escolha de hospedagem </span> 
         </WarningHotel> 
         : 
-        ticketTypeIsRemote ? 
+        ticket?.TicketType.isRemote ? 
           <WarningHotel> 
             <span> Sua modalidade de ingresso não inclui hospedagem </span> 
             <span> Prossiga para a escolha de atividades </span>
