@@ -24,18 +24,6 @@ export default function Hotel() {
   const [paymentHasDone, setPaymentHasDone] = useState(false);
 
   const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(false);
-  //console.log(location.state);
-  console.log(ticket);
-  // useEffect(() => {
-  //   if (ticket && ticket !== null) {
-  //     if (ticket?.status === 'PAID') {
-  //       setPaymentHasDone(true);
-  //     }
-  //     if (ticket?.TicketType.isRemote) {
-  //       setTicketTypeIsRemote(true);
-  //     }
-  //   }
-  // }, [data]);
 
   return (
     <HotelSpace paymentDone={paymentHasDone}>
