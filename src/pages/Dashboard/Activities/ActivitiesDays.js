@@ -1,15 +1,48 @@
 import styled from 'styled-components';
+import useActivities from '../../../hooks/api/useActivities';
 import { Status, Title } from '../Payment/payment-card';
+import * as dayjs from 'dayjs';
 
 export default function ActivitiesDays() {
+  const { dateActivites } = useActivities();
+
+  function getDate(date) {
+    const week = [
+      { day: 'Domingo' },
+      { day: 'Segunda' },
+      { day: 'Terça' },
+      { day: 'Quarta' },
+      { day: 'Quinta' },
+      { day: 'Sexta' },
+      { day: 'Sábado' },
+    ];
+
+    const dateActivity = date.slice(0, 10);
+    const index = dayjs(dateActivity).day();
+
+    return `${week[index].day}, ${dayjs(dateActivity).format('DD/MM')}`;
+  }
+
   return (
     <>
       <Title>Escolha de atividades</Title>
       <Status>Primeiro, filtre pelo dia do evento: </Status>
-      <Date>Sexta, 22/10</Date>
+
+      <Container>
+        {dateActivites?.map((date, key) => (
+          <Date key={key}>{getDate(date.date)}</Date>
+        ))}
+      </Container>
     </>
   );
 }
+
+const Container = styled.div`
+  width: 90%;
+  height: 80%;
+
+  display: flex;
+`;
 
 const Date = styled.div`
   width: 131px;
@@ -19,7 +52,7 @@ const Date = styled.div`
   align-items: center;
   justify-content: center;
 
-  margin-top: 25px;
+  margin: 25px 20px 20px 0;
 
   font-family: 'Roboto';
   font-weight: 400;
