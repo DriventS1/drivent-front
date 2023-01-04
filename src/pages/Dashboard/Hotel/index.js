@@ -6,6 +6,8 @@ import { Status, Title } from '../Payment/payment-card';
 import { ListHotels } from '../Hotel/listHotels';
 import WarningHotel from './WarningHotel';
 import useTicket from '../../../hooks/api/useTicket';
+import { ListRooms } from '../Hotel/listRooms';
+import useRoom from '../../../hooks/api/useRoom';
 
 import { useLocation } from 'react-router-dom';
 
@@ -13,17 +15,29 @@ export default function Hotel() {
   const { hotels } = useHotel();
   const { ticket } = useTicket();
   const location = useLocation();
-  //const ticket = location.state?.ticket;
-  //const { paymentWasMade } = location.state;
 
-  //console.log(hotels[0].Rooms);
+  const { getRooms } = useRoom();
+
+  const [dataRoom, setDataRoom] = useState({
+    roomId: null,
+  });
+
+  const [hotelRooms, setHotelRooms] = useState([]);
 
   const [data, setData] = useState({
     hotelId: null,
   });
+
   const [paymentHasDone, setPaymentHasDone] = useState(false);
 
   const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(false);
+
+  useEffect(async() => {
+    const rooms = await getRooms(data.hotelId);
+    if(data.hotelId) {
+      setHotelRooms(rooms.Rooms);
+    }
+  }, [data.hotelId]);
 
   return (
     <HotelSpace paymentDone={paymentHasDone}>
@@ -45,9 +59,18 @@ export default function Hotel() {
             <Status>Primeiro, escolha seu hotel</Status>
 
             {hotels ? (
-              <Container>
-                <ListHotels hotels={hotels} setData={setData} data={data} />
-              </Container>
+              <>
+                <Container>
+                  <ListHotels hotels={hotels} setData={setData} data={data} />
+                </Container>
+                {hotelRooms.length > 0 ? (
+                  <>
+                    <ListRooms rooms={hotelRooms} setDataRoom={setDataRoom} dataRoom={dataRoom}/>
+                  </>
+                ) : (
+                  ''
+                )}
+              </>
             ) : (
               ''
             )}
