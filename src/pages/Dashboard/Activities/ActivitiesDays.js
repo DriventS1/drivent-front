@@ -43,6 +43,16 @@ export default function ActivitiesDays() {
             Sua modalidade de ingresso não necessita escolher atividade. Você terá acesso a todas as atividades.
           </span>
         </WarningHotel>
+      ) : ticket?.status === 'PAID' && !ticket?.TicketType.includesHotel ? (
+        <>
+          <Status>Primeiro, filtre pelo dia do evento: </Status>
+
+          <Container>
+            {dateActivites?.map((date, key) => (
+              <Date key={key}>{getDate(date.date)}</Date>
+            ))}
+          </Container>
+        </>
       ) : (
         ticket?.status === 'PAID' && (
           <>
