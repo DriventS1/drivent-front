@@ -2,9 +2,13 @@ import styled from 'styled-components';
 import useActivities from '../../../hooks/api/useActivities';
 import { Status, Title } from '../Payment/payment-card';
 import * as dayjs from 'dayjs';
+import useTicket from '../../../hooks/api/useTicket';
+import WarningHotel from '../Hotel/WarningHotel';
 
 export default function ActivitiesDays() {
   const { dateActivites } = useActivities();
+  const { ticket } = useTicket();
+  console.log(ticket);
 
   function getDate(date) {
     const week = [
@@ -26,13 +30,24 @@ export default function ActivitiesDays() {
   return (
     <>
       <Title>Escolha de atividades</Title>
-      <Status>Primeiro, filtre pelo dia do evento: </Status>
 
-      <Container>
-        {dateActivites?.map((date, key) => (
-          <Date key={key}>{getDate(date.date)}</Date>
-        ))}
-      </Container>
+      {ticket?.status === 'PAID' && (
+        <>
+          <Status>Primeiro, filtre pelo dia do evento: </Status>
+
+          <Container>
+            {dateActivites?.map((date, key) => (
+              <Date key={key}>{getDate(date.date)}</Date>
+            ))}
+          </Container>
+        </>
+      )}
+
+      {ticket?.status === 'RESERVED' && (
+        <WarningHotel>
+          <span>Você precisa ter confirmado pagamento antes de fazer a escolha de atividades</span>
+        </WarningHotel>
+      )}
     </>
   );
 }
