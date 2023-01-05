@@ -31,22 +31,30 @@ export default function ActivitiesDays() {
     <>
       <Title>Escolha de atividades</Title>
 
-      {ticket?.status === 'PAID' && (
-        <>
-          <Status>Primeiro, filtre pelo dia do evento: </Status>
-
-          <Container>
-            {dateActivites?.map((date, key) => (
-              <Date key={key}>{getDate(date.date)}</Date>
-            ))}
-          </Container>
-        </>
-      )}
-
       {ticket?.status === 'RESERVED' && (
         <WarningHotel>
           <span>Você precisa ter confirmado pagamento antes de fazer a escolha de atividades</span>
         </WarningHotel>
+      )}
+
+      {ticket?.TicketType.isRemote === true ? (
+        <WarningHotel>
+          <span>
+            Sua modalidade de ingresso não necessita escolher atividade. Você terá acesso a todas as atividades.
+          </span>
+        </WarningHotel>
+      ) : (
+        ticket?.status === 'PAID' && (
+          <>
+            <Status>Primeiro, filtre pelo dia do evento: </Status>
+
+            <Container>
+              {dateActivites?.map((date, key) => (
+                <Date key={key}>{getDate(date.date)}</Date>
+              ))}
+            </Container>
+          </>
+        )
       )}
     </>
   );
