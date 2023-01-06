@@ -10,7 +10,7 @@ export default function WarningHotel( props ) {
 
 const WarningMessage = styled.div`
     width: 100%;
-    height: 100%;
+    height: 80%;
     display: flex;
     justify-content: center;
     align-items: center;
