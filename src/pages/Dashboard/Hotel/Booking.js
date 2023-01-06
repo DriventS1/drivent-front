@@ -29,10 +29,13 @@ export default function Booking({ setDataRoom }) {
   });
 
   function VacanciesCalculated({ hotel }) {
-    const bookingsRoom = 0;
-    //console.log(hotel?.Rooms);
-    //console.log(hotel.Rooms);
-    //const bookingsRoom = Number(hotel?.Rooms[roomBooking?.Room.id-1]._count.Booking) -1;
+    //const bookingsRoom = 0;
+    //console.log(Number(hotel?.Rooms[roomBooking?.Room.id-1]._count.Booking) -1);
+    //console.log(hotel?.Rooms[roomBooking?.Room.id-1]);
+    let bookingsRoom = 0;
+    if(hotel.Rooms && roomBooking.Room) {
+      bookingsRoom = Number(hotel?.Rooms[roomBooking?.Room.id-1]._count.Booking) -1;
+    }
   
     return(
       <h2>
