@@ -4,11 +4,12 @@ import { Status, Title } from '../Payment/payment-card';
 import * as dayjs from 'dayjs';
 import useTicket from '../../../hooks/api/useTicket';
 import WarningHotel from '../Hotel/WarningHotel';
+import ActivitiesList from './activitiesList';
 
 export default function ActivitiesDays() {
   const { dateActivites } = useActivities();
   const { ticket } = useTicket();
-  console.log(ticket);
+  console.log(dateActivites);
 
   function getDate(date) {
     const week = [
@@ -66,13 +67,14 @@ export default function ActivitiesDays() {
           </>
         )
       )}
+
+      <ActivitiesList/>
     </>
   );
 }
 
 const Container = styled.div`
   width: 90%;
-  height: 80%;
 
   display: flex;
 `;
