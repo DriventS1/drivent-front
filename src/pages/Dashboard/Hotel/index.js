@@ -1,6 +1,5 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import UserContext from '../../../contexts/UserContext';
 import useHotel from '../../../hooks/api/useHotel';
 import { Status, Title } from '../Payment/payment-card';
 import { ListHotels } from '../Hotel/listHotels';
@@ -9,12 +8,9 @@ import useTicket from '../../../hooks/api/useTicket';
 import { ListRooms } from '../Hotel/listRooms';
 import useRoom from '../../../hooks/api/useRoom';
 
-import { useLocation } from 'react-router-dom';
-
 export default function Hotel() {
   const { hotels } = useHotel();
   const { ticket } = useTicket();
-  const location = useLocation();
 
   const { getRooms } = useRoom();
 
@@ -24,20 +20,18 @@ export default function Hotel() {
 
   const [hotelRooms, setHotelRooms] = useState([]);
 
-  const [data, setData] = useState({
+  const [selectedHotel, setSelectedHotel] = useState({
     hotelId: null,
   });
 
   const [paymentHasDone, setPaymentHasDone] = useState(false);
 
-  const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(false);
-
   useEffect(async() => {
-    const rooms = await getRooms(data.hotelId);
-    if(data.hotelId) {
+    const rooms = await getRooms(selectedHotel.hotelId);
+    if(selectedHotel.hotelId) {
       setHotelRooms(rooms.Rooms);
     }
-  }, [data.hotelId]);
+  }, [selectedHotel.hotelId]);
 
   return (
     <HotelSpace paymentDone={paymentHasDone}>
@@ -61,7 +55,7 @@ export default function Hotel() {
             {hotels ? (
               <>
                 <Container>
-                  <ListHotels hotels={hotels} setData={setData} data={data} />
+                  <ListHotels hotels={hotels} setSelectedHotel={setSelectedHotel} selectedHotel={selectedHotel} />
                 </Container>
                 {hotelRooms.length > 0 ? (
                   <>

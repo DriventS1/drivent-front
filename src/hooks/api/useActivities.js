@@ -7,12 +7,12 @@ export default function useActivities() {
   const token = useToken();
   
   const {
-    data: dateActivites,
+    data: dateActivities,
     act: getDateActivities
   } = useAsync(() => activitiesApi.getDateActivities(token));
 
   return {
-    dateActivites,
+    dateActivities,
     getDateActivities
   };
 }
