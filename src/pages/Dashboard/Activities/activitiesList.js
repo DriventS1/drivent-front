@@ -1,92 +1,9 @@
 import styled from 'styled-components';
 
-export default function ActivitiesList() {
-  const arr = [
-    {
-      id: 1,
-      name: 'Auditório Principal',
-      createdAt: '2022-12-16T02:12:42.501Z',
-      updatedAt: '2022-12-16T02:12:42.501Z',
-      Activities: [
-        {
-          id: 1,
-          name: 'Minecraft: montando o PC ideal',
-          capacity: 30,
-          startsAt: '2023-01-16T02:09:00.501Z',
-          endsAt: '2023-01-16T02:10:00.501Z',
-          dateId: 1,
-          localId: 1,
-          createdAt: '2022-12-16T02:12:42.501Z',
-          updatedAt: '2022-12-16T02:12:42.501Z',
-        },
-        {
-          id: 2,
-          name: 'LoL: montando o PC ideal',
-          capacity: 5,
-          startsAt: '2023-01-16T02:10:00.501Z',
-          endsAt: '2023-01-16T02:11:00.501Z',
-          dateId: 1,
-          localId: 1,
-          createdAt: '2022-12-16T02:12:42.501Z',
-          updatedAt: '2022-12-16T02:12:42.501Z',
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: 'Auditório Lateral',
-      createdAt: '2022-12-16T02:12:42.501Z',
-      updatedAt: '2022-12-16T02:12:42.501Z',
-      Activities: [
-        {
-          id: 3,
-          name: 'Palestra x',
-          capacity: 35,
-          startsAt: '2023-01-16T02:09:00.501Z',
-          endsAt: '2023-01-16T02:11:00.501Z',
-          dateId: 1,
-          localId: 2,
-          createdAt: '2022-12-16T02:12:42.501Z',
-          updatedAt: '2022-12-16T02:12:42.501Z',
-        },
-      ],
-    },
-    {
-      id: 3,
-      name: 'Sala de Workshop',
-      createdAt: '2022-12-16T02:12:42.501Z',
-      updatedAt: '2022-12-16T02:12:42.501Z',
-      Activities: [
-        {
-          id: 4,
-          name: 'Palestra y',
-          capacity: 25,
-          startsAt: '2023-01-16T02:09:00.501Z',
-          endsAt: '2023-01-16T02:10:00.501Z',
-          dateId: 1,
-          localId: 3,
-          createdAt: '2022-12-16T02:12:42.501Z',
-          updatedAt: '2022-12-16T02:12:42.501Z',
-        },
-        {
-          id: 5,
-          name: 'Palestra z',
-          capacity: 15,
-          startsAt: '2023-01-16T02:10:00.501Z',
-          endsAt: '2023-01-16T02:11:00.501Z',
-          dateId: 1,
-          localId: 3,
-          createdAt: '2022-12-16T02:12:42.501Z',
-          updatedAt: '2022-12-16T02:12:42.501Z',
-        },
-      ],
-    },
-  ];
-
+export default function ActivitiesList({ activities }) {
   return (
     <Container>
-      {arr.map((obj, key) => {
-        console.log(obj);
+      {activities.map((obj, key) => {
         return (
           <Local key={key}>
             <LocalName>{obj.name}</LocalName>

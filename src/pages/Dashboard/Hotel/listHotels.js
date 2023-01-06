@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import { Vacancies } from './Vacancies';
 
-export function ListHotels({ hotels, setData, data }) {
+export function ListHotels({ hotels, setSelectedHotel, selectedHotel }) {
   function handleHotel(hotelId) {
-    setData({
+    setSelectedHotel({
       hotelId,
     });
   }
@@ -18,9 +18,11 @@ export function ListHotels({ hotels, setData, data }) {
           if (cpt.capacity === 1) single = 'Single,';
           if (cpt.capacity === 2) double = 'Double,';
           if (cpt.capacity === 3) triple = 'Triple';
+          return false;
         });
+
         return (
-          <StyledHotel key={key} onClick={() => handleHotel(hotel.id)}>
+          <StyledHotel key={key} selectedHotel={selectedHotel.hotelId} hotel={hotel.id} onClick={() => handleHotel(hotel.id)}>
             <Image src={hotel.image}></Image>
             <NameHotel>{hotel.name}</NameHotel>
             <SubTitle>Tipos de acomodação:</SubTitle>
@@ -46,7 +48,7 @@ const StyledHotel = styled.div`
   margin-top: 20px;
   margin-right: 20px;
 
-  background: #ebebeb;
+  background: ${(props) => (props.selectedHotel === props.hotel ? '#FFEED2;' : '#e0e0e0')};
   border-radius: 10px;
 `;
 

@@ -5,11 +5,18 @@ import * as dayjs from 'dayjs';
 import useTicket from '../../../hooks/api/useTicket';
 import WarningHotel from '../Hotel/WarningHotel';
 import ActivitiesList from './activitiesList';
+import useLocalWithActivities from '../../../hooks/api/useLocal';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 export default function ActivitiesDays() {
-  const { dateActivites } = useActivities();
+  const [dateId, setDateId] = useState(0);
+  const [activities, setActivities] = useState([]);
+  const [selected, setSelected] = useState(0);
+
+  const { dateActivities } = useActivities();
   const { ticket } = useTicket();
-  console.log(dateActivites);
+  const { getActivities } = useLocalWithActivities(dateId);
 
   function getDate(date) {
     const week = [
@@ -27,6 +34,12 @@ export default function ActivitiesDays() {
 
     return `${week[index].day}, ${dayjs(dateActivity).format('DD/MM')}`;
   }
+
+  useEffect(async() => {
+    const activities = await getActivities(dateId);
+    setDateId(dateId);
+    setActivities(activities);
+  }, [dateId]);
 
   return (
     <>
@@ -49,7 +62,7 @@ export default function ActivitiesDays() {
           <Status>Primeiro, filtre pelo dia do evento: </Status>
 
           <Container>
-            {dateActivites?.map((date, key) => (
+            {dateActivities?.map((date, key) => (
               <Date key={key}>{getDate(date.date)}</Date>
             ))}
           </Container>
@@ -60,15 +73,25 @@ export default function ActivitiesDays() {
             <Status>Primeiro, filtre pelo dia do evento: </Status>
 
             <Container>
-              {dateActivites?.map((date, key) => (
-                <Date key={key}>{getDate(date.date)}</Date>
+              {dateActivities?.map((date, key) => (
+                <Date
+                  key={key}
+                  selected={selected}
+                  dateId={date.id}
+                  onClick={() => {
+                    setSelected(date.id);
+                    setDateId(date.id);
+                  }}
+                >
+                  {getDate(date.date)}
+                </Date>
               ))}
             </Container>
           </>
         )
       )}
 
-      <ActivitiesList/>
+      {dateId > 0 && <ActivitiesList activities={activities} />}
     </>
   );
 }
@@ -96,7 +119,7 @@ const Date = styled.div`
 
   color: #000000;
 
-  background: #e0e0e0;
+  background: ${(props) => (props.selected === props.dateId ? '#FFD37D' : '#e0e0e0')};
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.25);
   border-radius: 4px;
 `;
