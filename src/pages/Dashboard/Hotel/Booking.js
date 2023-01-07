@@ -9,7 +9,6 @@ import { getBookings } from '../../../services/bookingApi';
 import Button from '../../../components/Form/Button';
 
 import { useLocation, useNavigate } from 'react-router-dom';
-import { recomposeColor } from '@material-ui/core';
 
 export default function Booking({ setDataRoom }) {
   const navigate = useNavigate();
@@ -25,13 +24,11 @@ export default function Booking({ setDataRoom }) {
       const promise = await getBookings({ token: data.token, hotelId: roomBooking?.Room.hotelId });
       setHotelSelected(promise);
     }
+
     getBooking();
   });
 
   function VacanciesCalculated({ hotel }) {
-    //const bookingsRoom = 0;
-    //console.log(Number(hotel?.Rooms[roomBooking?.Room.id-1]._count.Booking) -1);
-    //console.log(hotel?.Rooms[roomBooking?.Room.id-1]);
     let bookingsRoom = 0;
     if(hotel.Rooms && roomBooking.Room) {
       bookingsRoom = Number(hotel?.Rooms[roomBooking?.Room.id-1]._count.Booking) -1;

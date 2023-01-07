@@ -13,7 +13,6 @@ export function ListRooms({ rooms, setDataRoom, dataRoom }) {
   const [selectedRoom, setSelectedRoom] = useState({});
   const { userData: data } = useContext(UserContext);
   const token = useToken();
-  //console.log(selectedRoom);
   const navigate = useNavigate();
 
   async function sendRoomData(event) {
@@ -24,7 +23,6 @@ export function ListRooms({ rooms, setDataRoom, dataRoom }) {
     };
     
     try {
-      const existsBooking = await getBooking(token);
       await createOrUpdateBooking( body, token );
       toast('Quarto reservado com sucesso!');
       navigate('/dashboard/activities');

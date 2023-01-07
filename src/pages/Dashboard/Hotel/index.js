@@ -7,17 +7,19 @@ import { ListHotels } from '../Hotel/listHotels';
 import WarningHotel from './WarningHotel';
 import useTicket from '../../../hooks/api/useTicket';
 import { ListRooms } from '../Hotel/listRooms';
-import useRoom from '../../../hooks/api/useRoom';
+import { getRooms } from '../../../services/roomApi';
 import Booking from './Booking';
 
 import { useLocation } from 'react-router-dom';
+import useToken from '../../../hooks/useToken';
 
 export default function Hotel() {
+  const { userData: user } = useContext(UserContext); 
+  const token = useToken();
   const { hotels } = useHotel();
   const { ticket } = useTicket();
-  const location = useLocation();
 
-  const { getRooms } = useRoom();
+  const [bookingData, setBookingData] = useState([]);
 
   const [dataRoom, setDataRoom] = useState({
     roomId: null,
@@ -34,11 +36,11 @@ export default function Hotel() {
   const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(false);
 
   useEffect(async() => {
-    const rooms = await getRooms(data.hotelId);
-    if(data.hotelId) {
+    if(data.hotelId !== null && data.hotelId !== undefined) {
+      const rooms = await getRooms(token, data.hotelId);
       setHotelRooms(rooms.Rooms);
-    }
-  }, [data.hotelId]);
+    } 
+  });
 
   return (
     <HotelSpace paymentDone={paymentHasDone}>
@@ -56,7 +58,7 @@ export default function Hotel() {
             <span> Prossiga para a escolha de atividades </span>
           </WarningHotel> 
           :
-          dataRoom === null?
+          dataRoom.roomId === null?
             <>
               <Status>Primeiro, escolha seu hotel</Status>
 
@@ -65,7 +67,7 @@ export default function Hotel() {
                   <Container>
                     <ListHotels hotels={hotels} setData={setData} data={data} />
                   </Container>
-                  {hotelRooms.length > 0 ? (
+                  {(hotelRooms.length > 0 && data.hotelId !== null) || bookingData.length !== 0? (
                     <>
                       <ListRooms rooms={hotelRooms} setDataRoom={setDataRoom} dataRoom={dataRoom}/>
                     </>
@@ -73,9 +75,10 @@ export default function Hotel() {
                     ''
                   )}
                 </>
-              ) : (
-                ''
-              )}
+              ) 
+                : 
+                ('')
+              }
             </>
             :
             <Booking setDataRoom={setDataRoom}/>
