@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 import { Vacancies } from './Vacancies';
 
-export function ListHotels({ hotels, setData, data }) {
+export function ListHotels({ hotels, setSelectedHotel, selectedHotel }) {
   function handleHotel(hotelId) {
-    setData({
+    setSelectedHotel({
       hotelId,
     });
   }

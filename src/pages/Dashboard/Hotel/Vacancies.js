@@ -21,9 +21,10 @@ export function Vacancies({ hotelId }) {
   const { userData: data } = useContext(UserContext);
 
   useEffect(() => {
-    //console.log(data.token, ' ', hotelId );
-    const promise = getBookings({ token: data.token, hotelId });
-    promise.then(hotels => setHotel(hotels));
+    if(hotelId !== 'undefined') {
+      const promise = getBookings({ token: data.token, hotelId });
+      promise.then(hotels => setHotel(hotels));
+    }
   });
 
   return(

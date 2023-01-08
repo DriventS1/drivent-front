@@ -21,8 +21,10 @@ export default function Booking({ setDataRoom }) {
   
   useEffect(() => {
     async function getBooking() {
-      const promise = await getBookings({ token: data.token, hotelId: roomBooking?.Room.hotelId });
-      setHotelSelected(promise);
+      if(roomBooking !== null) {
+        const promise = await getBookings({ token: data.token, hotelId: roomBooking?.Room.hotelId });
+        setHotelSelected(promise);
+      }
     }
 
     getBooking();
@@ -30,8 +32,10 @@ export default function Booking({ setDataRoom }) {
 
   function VacanciesCalculated({ hotel }) {
     let bookingsRoom = 0;
+    //const hotelRooms = hotel.Rooms;
     if(hotel.Rooms && roomBooking.Room) {
-      bookingsRoom = Number(hotel?.Rooms[roomBooking?.Room.id-1]._count.Booking) -1;
+      const idRoomSelected = hotel.Rooms.find(room => room.id === roomBooking.Room.id);
+      bookingsRoom = Number(idRoomSelected._count.Booking) -1;
     }
   
     return(

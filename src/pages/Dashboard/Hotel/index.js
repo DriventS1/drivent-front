@@ -8,39 +8,36 @@ import WarningHotel from './WarningHotel';
 import useTicket from '../../../hooks/api/useTicket';
 import { ListRooms } from '../Hotel/listRooms';
 import { getRooms } from '../../../services/roomApi';
+import useBooking from '../../../hooks/api/useBooking';
 import Booking from './Booking';
 
 import { useLocation } from 'react-router-dom';
 import useToken from '../../../hooks/useToken';
 
 export default function Hotel() {
-  const { userData: user } = useContext(UserContext); 
+  const { userData: data } = useContext(UserContext); 
   const token = useToken();
   const { hotels } = useHotel();
   const { ticket } = useTicket();
-
+  
   const [bookingData, setBookingData] = useState([]);
-
-  const [dataRoom, setDataRoom] = useState({
-    roomId: null,
-  });
-
+  const [dataRoom, setDataRoom] = useState({ roomId: null });
   const [hotelRooms, setHotelRooms] = useState([]);
-
-  const [data, setData] = useState({
+  const [selectedHotel, setSelectedHotel] = useState({
     hotelId: null,
   });
-
   const [paymentHasDone, setPaymentHasDone] = useState(false);
-
   const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(false);
 
+  const { roomBooking } = useBooking(data.user.id);
+
   useEffect(async() => {
-    if(data.hotelId !== null && data.hotelId !== undefined) {
-      const rooms = await getRooms(token, data.hotelId);
+    let rooms = null;
+    if(selectedHotel.hotelId !== null && selectedHotel.hotelId !== 'undefined') {
+      rooms = await getRooms(token, selectedHotel.hotelId);
       setHotelRooms(rooms.Rooms);
     } 
-  });
+  }, [selectedHotel.hotelId]);
 
   return (
     <HotelSpace paymentDone={paymentHasDone}>
@@ -58,16 +55,16 @@ export default function Hotel() {
             <span> Prossiga para a escolha de atividades </span>
           </WarningHotel> 
           :
-          dataRoom.roomId === null?
+          (roomBooking === null || dataRoom === null)?
             <>
               <Status>Primeiro, escolha seu hotel</Status>
 
               {hotels ? (
                 <>
                   <Container>
-                    <ListHotels hotels={hotels} setData={setData} data={data} />
+                    <ListHotels hotels={hotels} setSelectedHotel={setSelectedHotel} selectedHotel={selectedHotel} />
                   </Container>
-                  {(hotelRooms.length > 0 && data.hotelId !== null) || bookingData.length !== 0? (
+                  {(hotelRooms.length > 0 && selectedHotel.hotelId !== null) || bookingData.length !== 0? (
                     <>
                       <ListRooms rooms={hotelRooms} setDataRoom={setDataRoom} dataRoom={dataRoom}/>
                     </>
