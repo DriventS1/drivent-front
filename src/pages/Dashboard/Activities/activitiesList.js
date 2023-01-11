@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import { AiOutlineCloseCircle } from 'react-icons/ai';
+import { RxEnter } from 'react-icons/rx';
 
 export default function ActivitiesList({ activities }) {
   return (
@@ -12,6 +14,7 @@ export default function ActivitiesList({ activities }) {
                 let hourStarts = Number(act.startsAt.slice(14, 16));
                 let hourEnds = Number(act.endsAt.slice(14, 16));
                 let calc = hourEnds - hourStarts;
+                let vagas = act.capacity - act.BookingActivities.length;
 
                 return (
                   <Activity key={key} hours={calc}>
@@ -22,7 +25,12 @@ export default function ActivitiesList({ activities }) {
                       </p>
                     </div>
 
-                    <div>VAGAS</div>
+                    <> 
+                      {vagas === 0? 
+                        <div className='sold'> <p> <AiOutlineCloseCircle/> </p> <p>Esgotado</p> </div>
+                        : 
+                        <div className='enter'> <p> <RxEnter/> </p> <p>{vagas} vagas</p> </div>} 
+                    </>
                   </Activity>
                 );
               })}
@@ -114,5 +122,25 @@ const Activity = styled.div`
     color: #343434;
 
     margin-top: 8px;
+  }
+
+  .sold {
+    margin-left: 5px;
+    p:first-child {
+      font-size: 20px;
+    }
+    p {
+      color: red;
+    }
+  }
+
+  .enter {
+    margin-left: 5px;
+    p:first-child {
+      font-size: 20px;
+    }
+    p {
+      color: green;
+    }
   }
 `;
