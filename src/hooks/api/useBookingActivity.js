@@ -9,7 +9,7 @@ export default function useBookingActivity() {
   const {
     data: createdBookingActivity,
     act: createBookingActivity
-  } = useAsync((data) => activitiesApi.postActivity(token, data), false);
+  } = useAsync((data) => activitiesApi.postActivity(token, data));
 
   return {
     createdBookingActivity,

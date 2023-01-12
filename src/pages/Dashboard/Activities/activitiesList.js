@@ -16,10 +16,9 @@ function ActivityComponent( { calc, act } ) {
     e.preventDefault();
     try {
       const body = {
-        activityId: act.id
+        activitiesId: Number(act.id)
       };
-      //await createBookingActivity(body);
-      //const createdBooking = await postActivity(token, body);
+      await createBookingActivity(body);
       toast('Você foi inscrito na atividade!');
       setSelectedActivity(true);   
     } catch (error) {
