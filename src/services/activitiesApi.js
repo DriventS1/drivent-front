@@ -17,3 +17,12 @@ export async function getActivitiesWithLocal(token, dateId) {
   });
   return response.data;
 }
+
+export async function postActivity(token, body) {
+  const response = await api.post('/activities', body, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return response.data;
+}

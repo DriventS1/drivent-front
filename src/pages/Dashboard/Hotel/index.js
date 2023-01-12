@@ -54,11 +54,10 @@ export default function Hotel() {
             <>
               <Status>Primeiro, escolha seu hotel</Status>
 
-
               {hotels ? (
                 <>
                   <Container>
-                    <ListHotels hotels={hotels} setData={setData} data={data} />
+                    <ListHotels hotels={hotels} setSelectedHotel={setSelectedHotel} selectedHotel={selectedHotel} />
                   </Container>
                   {hotelRooms.length > 0 ? (
                     <>
