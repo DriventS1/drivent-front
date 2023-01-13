@@ -7,6 +7,7 @@ import WarningHotel from './WarningHotel';
 import useTicket from '../../../hooks/api/useTicket';
 import { ListRooms } from '../Hotel/listRooms';
 import useRoom from '../../../hooks/api/useRoom';
+import Booking from './Booking';
 
 export default function Hotel() {
   const { hotels } = useHotel();
@@ -49,27 +50,29 @@ export default function Hotel() {
             <span> Prossiga para a escolha de atividades </span>
           </WarningHotel> 
           :
-          <>
-            <Status>Primeiro, escolha seu hotel</Status>
+          dataRoom === null?
+            <>
+              <Status>Primeiro, escolha seu hotel</Status>
 
-            {hotels ? (
-              <>
-                <Container>
-                  <ListHotels hotels={hotels} setSelectedHotel={setSelectedHotel} selectedHotel={selectedHotel} />
-                </Container>
-                {hotelRooms.length > 0 ? (
-                  <>
-                    <ListRooms rooms={hotelRooms} setDataRoom={setDataRoom} dataRoom={dataRoom}/>
-                  </>
-                ) : (
-                  ''
-                )}
-              </>
-            ) : (
-              ''
-            )}
-          </>
-
+              {hotels ? (
+                <>
+                  <Container>
+                    <ListHotels hotels={hotels} setSelectedHotel={setSelectedHotel} selectedHotel={selectedHotel} />
+                  </Container>
+                  {hotelRooms.length > 0 ? (
+                    <>
+                      <ListRooms rooms={hotelRooms} setDataRoom={setDataRoom} dataRoom={dataRoom}/>
+                    </>
+                  ) : (
+                    ''
+                  )}
+                </>
+              ) : (
+                ''
+              )}
+            </>
+            :
+            <Booking setDataRoom={setDataRoom}/>
       }
     </HotelSpace>
   );

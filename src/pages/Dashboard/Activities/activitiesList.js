@@ -1,12 +1,65 @@
 import styled from 'styled-components';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { RxEnter } from 'react-icons/rx';
+import { useState } from 'react'; 
+import { postActivity } from '../../../services/activitiesApi';
+import useToken from '../../../hooks/useToken';
+import { toast } from 'react-toastify';
+import useBookingActivity from '../../../hooks/api/useBookingActivity';
+import { BsCheckCircle } from 'react-icons/bs';
+
+function ActivityComponent( { calc, act, vagas } ) {
+  const [selectedActivity, setSelectedActivity] = useState(false);
+  const [disabledButtons, setDisabledButtons] = useState(false);
+  const token = useToken();
+  const { createBookingActivity } = useBookingActivity();
+  
+  async function bookingActivity(e) {
+    e.preventDefault();
+    try {
+      const body = {
+        activitiesId: Number(act.id)
+      };
+      await createBookingActivity(body);
+      toast('Você foi inscrito na atividade!');
+      setSelectedActivity(true);   
+    } catch (error) {
+      toast('Não foi possível de inscrever na atividade');
+      console.log(error);
+    }  
+  }
+
+  return (
+    <Activity hours={calc} selectedActivity={selectedActivity} onClick={(e) => bookingActivity(e)}>
+      <div>
+        <p>{act.name}</p>
+        <p>
+          {act.startsAt.slice(14, 19)} - {act.endsAt.slice(14, 19)}
+        </p>
+      </div>
+
+      {selectedActivity ? 
+        <SubscribedActivity>
+          <BsCheckCircle />
+          Inscrito
+        </SubscribedActivity> : 
+        <> 
+          {vagas === 0? 
+            <div className='sold'> <p> <AiOutlineCloseCircle/> </p> <p>Esgotado</p> </div>
+            : 
+            <div className='enter'> <p> <RxEnter/> </p> <p>{vagas} vagas</p> </div>} 
+        </>
+      }
+    </Activity>
+  );
+}
+
 
 export default function ActivitiesList({ activities }) {
   return (
     <Container>
       {activities.map((obj, key) => {
-        return (
+        return ( 
           <Local key={key}>
             <LocalName>{obj.name}</LocalName>
             <ListActivities>
@@ -17,21 +70,7 @@ export default function ActivitiesList({ activities }) {
                 let vagas = act.capacity - act.BookingActivities.length;
 
                 return (
-                  <Activity key={key} hours={calc}>
-                    <div>
-                      <p>{act.name}</p>
-                      <p>
-                        {act.startsAt.slice(14, 19)} - {act.endsAt.slice(14, 19)}
-                      </p>
-                    </div>
-
-                    <> 
-                      {vagas === 0? 
-                        <div className='sold'> <p> <AiOutlineCloseCircle/> </p> <p>Esgotado</p> </div>
-                        : 
-                        <div className='enter'> <p> <RxEnter/> </p> <p>{vagas} vagas</p> </div>} 
-                    </>
-                  </Activity>
+                  <ActivityComponent key={key} calc={calc} act={act} vagas={vagas}/>
                 );
               })}
             </ListActivities>
@@ -94,8 +133,18 @@ const Activity = styled.div`
   padding: 12px;
   margin-bottom: 10px;
 
-  background: #f1f1f1;
+  background: ${props => props.selectedActivity ? '#D0FFDB' : '#f1f1f1'};
   border-radius: 5px;
+  cursor: pointer;
+  
+
+  &:hover {
+    transform: translateX(1px);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
 
   div:first-child {
     width: 80%;
@@ -143,4 +192,13 @@ const Activity = styled.div`
       color: green;
     }
   }
+`;
+
+const SubscribedActivity = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: #36B853;
+  margin-left: 10px;
 `;

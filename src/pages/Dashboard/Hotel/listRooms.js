@@ -1,24 +1,29 @@
 import styled from 'styled-components';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { BsPerson, BsPersonFill } from 'react-icons/bs';
+import UserContext from '../../../contexts/UserContext';
 import useBooking from '../../../hooks/api/useRoomBooking';
 import { toast } from 'react-toastify';
+import { getBooking } from '../../../services/roomBookingApi';
 import { createOrUpdateBooking } from '../../../services/roomBookingApi';
 import { useNavigate } from 'react-router-dom';
 import useToken from '../../../hooks/useToken';
 
 export function ListRooms({ rooms, setDataRoom, dataRoom }) {
   const [selectedRoom, setSelectedRoom] = useState({});
+  const { userData: data } = useContext(UserContext);
   const token = useToken();
   const navigate = useNavigate();
+
   async function sendRoomData(event) {
     event.preventDefault();
     
     const body = {
       roomId: selectedRoom.id,
     };
-
+    
     try {
+      const existsBooking = await getBooking(token);
       await createOrUpdateBooking( body, token );
       toast('Quarto reservado com sucesso!');
       navigate('/dashboard/activities');
@@ -42,7 +47,11 @@ export function ListRooms({ rooms, setDataRoom, dataRoom }) {
             ))}
           </div>
         </StyledRooms>
-        {selectedRoom.id ? (<form onSubmit={sendRoomData}><button onClick={async(e) => await sendRoomData(e)}>Reservar</button></form>): ('')}
+        {selectedRoom.id ? 
+          (<form onSubmit={sendRoomData}><button onClick={async(e) => await sendRoomData(e)}>Reservar</button></form>)
+          : 
+          ('')
+        }
       </>) : ('')}
     </Container>
   );

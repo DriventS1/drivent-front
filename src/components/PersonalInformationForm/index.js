@@ -49,7 +49,7 @@ export default function PersonalInformationForm() {
         address: {
           cep: data.cep,
           street: data.street,
-          city: data.city,
+          city: data.city, 
           number: data.number,
           state: data.state,
           neighborhood: data.neighborhood,
