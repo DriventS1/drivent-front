@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import { AiOutlineCloseCircle } from 'react-icons/ai';
+import { RxEnter } from 'react-icons/rx';
 import { useState } from 'react'; 
 import { postActivity } from '../../../services/activitiesApi';
 import useToken from '../../../hooks/useToken';
@@ -6,7 +8,7 @@ import { toast } from 'react-toastify';
 import useBookingActivity from '../../../hooks/api/useBookingActivity';
 import { BsCheckCircle } from 'react-icons/bs';
 
-function ActivityComponent( { calc, act } ) {
+function ActivityComponent( { calc, act, vagas } ) {
   const [selectedActivity, setSelectedActivity] = useState(false);
   const [disabledButtons, setDisabledButtons] = useState(false);
   const token = useToken();
@@ -41,13 +43,17 @@ function ActivityComponent( { calc, act } ) {
           <BsCheckCircle />
           Inscrito
         </SubscribedActivity> : 
-        <div>
-          VAGAS
-        </div>
+        <> 
+          {vagas === 0? 
+            <div className='sold'> <p> <AiOutlineCloseCircle/> </p> <p>Esgotado</p> </div>
+            : 
+            <div className='enter'> <p> <RxEnter/> </p> <p>{vagas} vagas</p> </div>} 
+        </>
       }
     </Activity>
   );
 }
+
 
 export default function ActivitiesList({ activities }) {
   return (
@@ -61,9 +67,10 @@ export default function ActivitiesList({ activities }) {
                 let hourStarts = Number(act.startsAt.slice(14, 16));
                 let hourEnds = Number(act.endsAt.slice(14, 16));
                 let calc = hourEnds - hourStarts;
+                let vagas = act.capacity - act.BookingActivities.length;
 
                 return (
-                  <ActivityComponent key={key} calc={calc} act={act} />
+                  <ActivityComponent key={key} calc={calc} act={act} vagas={vagas}/>
                 );
               })}
             </ListActivities>
@@ -164,6 +171,26 @@ const Activity = styled.div`
     color: #343434;
 
     margin-top: 8px;
+  }
+
+  .sold {
+    margin-left: 5px;
+    p:first-child {
+      font-size: 20px;
+    }
+    p {
+      color: red;
+    }
+  }
+
+  .enter {
+    margin-left: 5px;
+    p:first-child {
+      font-size: 20px;
+    }
+    p {
+      color: green;
+    }
   }
 `;
 
