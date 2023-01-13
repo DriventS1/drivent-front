@@ -59,7 +59,7 @@ export default function SignIn() {
     }
 
     if(code && gitHubEmail) {
-      const body = { email: gitHubEmail };
+      //const body = { email: gitHubEmail };
       try {
         const userData = await signUpWithGitHub(gitHubEmail, null);
         localStorage.setItem('AccessToken', userData.token);
@@ -70,7 +70,7 @@ export default function SignIn() {
         toast('Não foi possível fazer o login outra vez!');
       }
     };
-  });
+  }, [ gitHubEmail ]);
 
   async function loginWithGithub() {
     const GITHUB_URL = `https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}`;
