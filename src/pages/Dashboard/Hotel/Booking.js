@@ -40,7 +40,7 @@ export default function Booking({ setDataRoom }) {
   
     return(
       <h2>
-        {bookingsRoom === 0? 'Você' : `Você e mais ${bookingsRoom}`}
+        {bookingsRoom === 0? 'Somente você' : `Você e mais ${bookingsRoom} pessoas`}
       </h2>
     );
   }
