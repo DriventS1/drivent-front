@@ -9,7 +9,7 @@ import useBookingActivity from '../../../hooks/api/useBookingActivity';
 import { BsCheckCircle } from 'react-icons/bs';
 
 function ActivityComponent( { calc, act, vagas } ) {
-  const [selectedActivity, setSelectedActivity] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState(act.BookingActivities.length > 0);
   const [disabledButtons, setDisabledButtons] = useState(false);
   const token = useToken();
   const { createBookingActivity } = useBookingActivity();
@@ -53,7 +53,6 @@ function ActivityComponent( { calc, act, vagas } ) {
     </Activity>
   );
 }
-
 
 export default function ActivitiesList({ activities }) {
   return (
