@@ -1,37 +1,42 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import styled from 'styled-components';
+import UserContext from '../../../contexts/UserContext';
 import useHotel from '../../../hooks/api/useHotel';
 import { Status, Title } from '../Payment/payment-card';
 import { ListHotels } from '../Hotel/listHotels';
 import WarningHotel from './WarningHotel';
 import useTicket from '../../../hooks/api/useTicket';
 import { ListRooms } from '../Hotel/listRooms';
-import useRoom from '../../../hooks/api/useRoom';
+import { getRooms } from '../../../services/roomApi';
+import useBooking from '../../../hooks/api/useBooking';
 import Booking from './Booking';
 
+import useToken from '../../../hooks/useToken';
+
 export default function Hotel() {
+  const { userData: data } = useContext(UserContext); 
+  const token = useToken();
   const { hotels } = useHotel();
   const { ticket } = useTicket();
-
-  const { getRooms } = useRoom();
-
-  const [dataRoom, setDataRoom] = useState({
-    roomId: null,
-  });
-
+  
+  const [bookingData, setBookingData] = useState([]);
+  const [dataRoom, setDataRoom] = useState({ roomId: null });
   const [hotelRooms, setHotelRooms] = useState([]);
 
   const [selectedHotel, setSelectedHotel] = useState({
     hotelId: null,
   });
-
   const [paymentHasDone, setPaymentHasDone] = useState(false);
+  const [ticketTypeIsRemote, setTicketTypeIsRemote] = useState(false);
+
+  const { roomBooking } = useBooking(data.user.id);
 
   useEffect(async() => {
-    const rooms = await getRooms(selectedHotel.hotelId);
-    if(selectedHotel.hotelId) {
+    let rooms = null;
+    if(selectedHotel.hotelId !== null && selectedHotel.hotelId !== 'undefined') {
+      rooms = await getRooms(token, selectedHotel.hotelId);
       setHotelRooms(rooms.Rooms);
-    }
+    } 
   }, [selectedHotel.hotelId]);
 
   return (
@@ -50,7 +55,7 @@ export default function Hotel() {
             <span> Prossiga para a escolha de atividades </span>
           </WarningHotel> 
           :
-          dataRoom === null?
+          (roomBooking === null || dataRoom === null)?
             <>
               <Status>Primeiro, escolha seu hotel</Status>
 
@@ -59,7 +64,7 @@ export default function Hotel() {
                   <Container>
                     <ListHotels hotels={hotels} setSelectedHotel={setSelectedHotel} selectedHotel={selectedHotel} />
                   </Container>
-                  {hotelRooms.length > 0 ? (
+                  {(hotelRooms.length > 0 && selectedHotel.hotelId !== null) || bookingData.length !== 0? (
                     <>
                       <ListRooms rooms={hotelRooms} setDataRoom={setDataRoom} dataRoom={dataRoom}/>
                     </>
@@ -67,9 +72,10 @@ export default function Hotel() {
                     ''
                   )}
                 </>
-              ) : (
-                ''
-              )}
+              ) 
+                : 
+                ('')
+              }
             </>
             :
             <Booking setDataRoom={setDataRoom}/>

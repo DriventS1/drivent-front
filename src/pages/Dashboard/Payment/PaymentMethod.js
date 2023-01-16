@@ -24,7 +24,6 @@ export default function PaymentForm() {
   });
   const { ticket } = useTicket();
   const navigate = useNavigate();
-  //console.log(ticket);
   
   async function sendPaymentData(event) {
     event.preventDefault();

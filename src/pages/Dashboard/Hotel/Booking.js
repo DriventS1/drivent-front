@@ -9,7 +9,6 @@ import { getBookings } from '../../../services/bookingApi';
 import Button from '../../../components/Form/Button';
 
 import { useLocation, useNavigate } from 'react-router-dom';
-import { recomposeColor } from '@material-ui/core';
 
 export default function Booking({ setDataRoom }) {
   const navigate = useNavigate();
@@ -22,24 +21,26 @@ export default function Booking({ setDataRoom }) {
   
   useEffect(() => {
     async function getBooking() {
-      const promise = await getBookings({ token: data.token, hotelId: roomBooking?.Room.hotelId });
-      setHotelSelected(promise);
+      if(roomBooking !== null) {
+        const promise = await getBookings({ token: data.token, hotelId: roomBooking?.Room.hotelId });
+        setHotelSelected(promise);
+      }
     }
+
     getBooking();
   });
 
   function VacanciesCalculated({ hotel }) {
-    //const bookingsRoom = 0;
-    //console.log(Number(hotel?.Rooms[roomBooking?.Room.id-1]._count.Booking) -1);
-    //console.log(hotel?.Rooms[roomBooking?.Room.id-1]);
     let bookingsRoom = 0;
+    //const hotelRooms = hotel.Rooms;
     if(hotel.Rooms && roomBooking.Room) {
-      bookingsRoom = Number(hotel?.Rooms[roomBooking?.Room.id-1]._count.Booking) -1;
+      const idRoomSelected = hotel.Rooms.find(room => room.id === roomBooking.Room.id);
+      bookingsRoom = Number(idRoomSelected._count.Booking) -1;
     }
   
     return(
       <h2>
-        {bookingsRoom === 0? 'Você' : `Você e mais ${bookingsRoom}`}
+        {bookingsRoom === 0? 'Somente você' : `Você e mais ${bookingsRoom} pessoas`}
       </h2>
     );
   }

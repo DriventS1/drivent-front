@@ -1,3 +1,4 @@
+import dotenv from 'dotenv';
 import {
   BrowserRouter as Router,
   Routes,
@@ -23,6 +24,8 @@ import useToken from './hooks/useToken';
 import PaymentCard from './pages/Dashboard/Payment/payment-card';
 
 export default function App() {
+  dotenv.config();
+
   return (
     <>
       <ToastContainer />

@@ -5,16 +5,22 @@ import UserContext from '../../../contexts/UserContext';
 import useBooking from '../../../hooks/api/useRoomBooking';
 import { toast } from 'react-toastify';
 import { getBooking } from '../../../services/roomBookingApi';
-import { createOrUpdateBooking } from '../../../services/roomBookingApi';
+import { createOrUpdateBooking, updateBooking } from '../../../services/roomBookingApi';
 import { useNavigate } from 'react-router-dom';
 import useToken from '../../../hooks/useToken';
 
 export function ListRooms({ rooms, setDataRoom, dataRoom }) {
+  const [bookingData, setBookingData] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState({});
   const { userData: data } = useContext(UserContext);
   const token = useToken();
   const navigate = useNavigate();
 
+  useEffect(async() => {
+    const booking = await getBooking(token);
+    setBookingData(booking);
+  }, [bookingData]);
+  
   async function sendRoomData(event) {
     event.preventDefault();
     
@@ -23,7 +29,13 @@ export function ListRooms({ rooms, setDataRoom, dataRoom }) {
     };
     
     try {
-      const existsBooking = await getBooking(token);
+      setDataRoom({ roomId: selectedRoom.id });
+      if(bookingData !== null) {
+        await updateBooking(bookingData.id, body, token);
+        toast('Quarto reservado com sucesso!');
+        navigate('/dashboard/activities');
+        return;
+      }
       await createOrUpdateBooking( body, token );
       toast('Quarto reservado com sucesso!');
       navigate('/dashboard/activities');
