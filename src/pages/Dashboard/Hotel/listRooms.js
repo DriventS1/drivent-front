@@ -117,13 +117,13 @@ function EachRoom({ room, selectedRoom, setSelectedRoom }) {
     <StyledRoom unavailable={unavailable} selectedRoom={selectedRoom.id} roomId={room.id} onClick={selectRoom}>
       <h5>{room.name}</h5>
       <div>
-        {iconsList.map((icon) => {
+        {iconsList.map((icon, key) => {
           if (icon === 'selected' && selectedRoom.id === room.id) {
-            return <BsPersonFill color="#FF4791" />;
+            return <BsPersonFill color="#FF4791" key={key} />;
           } else if (icon === 'unavailable') {
-            return <BsPersonFill/>;
+            return <BsPersonFill key={key}/>;
           } else {
-            return <BsPerson/>;
+            return <BsPerson key={key}/>;
           }
         })}
       </div>

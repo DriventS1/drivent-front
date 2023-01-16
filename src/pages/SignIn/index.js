@@ -14,13 +14,12 @@ import EventInfoContext from '../../contexts/EventInfoContext';
 import UserContext from '../../contexts/UserContext';
 
 import useSignIn from '../../hooks/api/useSignIn';
+import { getGitHubUserData } from '../../services/githubApi';
 import useSignUpWithGitHub from '../../hooks/api/useGitHubSignUp';
-import axios from 'axios';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [codeParam, setCodeParam] = useState(false);
   const [gitHubEmail, setGitHubEmail] = useState(false);
 
   const { loadingSignIn, signIn } = useSignIn();
@@ -47,19 +46,17 @@ export default function SignIn() {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const code = urlParams.get('code');
-    setCodeParam(code);
 
     if(code && !gitHubEmail) {
       try {
-        const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL}/users/auth`, { codeParam: code });
-        setGitHubEmail(response.data);
+        const email = await getGitHubUserData(code);
+        setGitHubEmail(email);
       } catch (error) {
         toast('Fazendo login...');
       }
     }
 
     if(code && gitHubEmail) {
-      //const body = { email: gitHubEmail };
       try {
         const userData = await signUpWithGitHub(gitHubEmail, null);
         localStorage.setItem('AccessToken', userData.token);

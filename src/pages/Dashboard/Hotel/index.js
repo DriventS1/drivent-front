@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import styled from 'styled-components';
 import UserContext from '../../../contexts/UserContext';
 import useHotel from '../../../hooks/api/useHotel';
@@ -11,7 +11,6 @@ import { getRooms } from '../../../services/roomApi';
 import useBooking from '../../../hooks/api/useBooking';
 import Booking from './Booking';
 
-import { useLocation } from 'react-router-dom';
 import useToken from '../../../hooks/useToken';
 
 export default function Hotel() {
@@ -23,6 +22,7 @@ export default function Hotel() {
   const [bookingData, setBookingData] = useState([]);
   const [dataRoom, setDataRoom] = useState({ roomId: null });
   const [hotelRooms, setHotelRooms] = useState([]);
+
   const [selectedHotel, setSelectedHotel] = useState({
     hotelId: null,
   });
