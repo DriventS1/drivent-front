@@ -12,7 +12,7 @@ function ActivityComponent( { calc, act, vagas } ) {
   const [selectedActivity, setSelectedActivity] = useState(act.BookingActivities.length > 0);
   const [disabledButtons, setDisabledButtons] = useState(false);
   const token = useToken();
-  const { createBookingActivity } = useBookingActivity();
+  //const { createBookingActivity } = useBookingActivity();
   
   async function bookingActivity(e) {
     e.preventDefault();
@@ -20,7 +20,8 @@ function ActivityComponent( { calc, act, vagas } ) {
       const body = {
         activitiesId: Number(act.id)
       };
-      await createBookingActivity(body);
+      //await createBookingActivity(body);
+      await postActivity(token, body);
       toast('Você foi inscrito na atividade!');
       setSelectedActivity(true);   
     } catch (error) {
